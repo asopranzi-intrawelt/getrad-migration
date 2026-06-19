@@ -8,7 +8,7 @@
 
 ```
 Branch attivo:          main
-Commit di riferimento:  4f686bf
+Commit di riferimento:  11b13e8
 Data snapshot:          2026-06-19
 ```
 
