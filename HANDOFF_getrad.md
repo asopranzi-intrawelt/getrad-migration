@@ -47,8 +47,8 @@ Stack applicativo (`/srv/getrad-stack/`):
 
 Container in esecuzione:
 
-- `getrad-db` — mariadb:10.3 (3306 interna, NON esposta sull'host)
-- `getrad-app` — tomcat:9-jdk8 custom (8080 esposta su 0.0.0.0:8080)
+- `getrad-db` - mariadb:10.3 (3306 interna, NON esposta sull'host)
+- `getrad-app` - tomcat:9-jdk8 custom (8080 esposta su 0.0.0.0:8080)
 - Rete bridge: `getrad-stack_getrad-net`, risoluzione DNS interna (`db` raggiungibile come
   `db:3306`)
 
@@ -136,7 +136,7 @@ qemu-guest-agent); pin apt per snapd con Priority -10.
 
 ## Lavori in sospeso
 
-### Fase 5 — patching meccanico file JSP (PRIORITÀ ALTA)
+### Fase 5 - patching meccanico file JSP (PRIORITÀ ALTA)
 
 Tutti i file JSP si trovano in `/srv/getrad-stack/extracted/getrad/jsp/` su VM810.
 
@@ -157,7 +157,7 @@ Tutti i file JSP si trovano in `/srv/getrad-stack/extracted/getrad/jsp/` su VM81
 | `preventivi/index.jsp` | 314, 319, 350, 355, 387-388, 539, 592, 600 |
 | `preventivi/insupdpreventivo.jsp` | 1314-1315, 1337, 1367, 1381, 1386, 1408-1409, 1414, 1618-1828 (selettivi) |
 
-**File PENDING — errori noti, da fixare in ordine**:
+**File PENDING - errori noti, da fixare in ordine**:
 
 | File | Errore noto | Rotta di test |
 |---|---|---|
@@ -165,12 +165,12 @@ Tutti i file JSP si trovano in `/srv/getrad-stack/extracted/getrad/jsp/` su VM81
 | `preventivi/_combinazione.jsp` | HTTP 500; log da riprodurre via `docker compose logs` | `/jsp/preventivi/_combinazione.jsp` |
 | `ordini/index.jsp` | line 211: `multiLang.getLabel(id_lingua, "label.cerca")` con apici errati | `/jsp/ordini/index.jsp` |
 | `fatture/index.jsp` | via `fatture/index_tr.jspf` line 78 → `fatture/fatture_tr.jspf` line 479 | `/jsp/fatture/index.jsp` |
-| `traduttori/banca.jsp` | mai toccato | — |
-| `traduttori/emailtrad.jsp` | mai toccato | — |
+| `traduttori/banca.jsp` | mai toccato | - |
+| `traduttori/emailtrad.jsp` | mai toccato | - |
 | `provvigioni/index.jsp` | via `provvigioni/provvigioni_env.jspf` line 20 | `/jsp/provvigioni/index.jsp` |
 | `riepiloghi/index.jsp` | via `riepiloghi/index_tr.jspf` line 86 | `/jsp/riepiloghi/index.jsp` |
 
-**File candidati — mai toccati, errori latenti probabili** (da scansione grep su VM809):
+**File candidati - mai toccati, errori latenti probabili** (da scansione grep su VM809):
 
 ```
 getrad/js/ordini.jsp          clienti/area/charts.jsp
@@ -194,22 +194,22 @@ archiviate) a meno che non producano errori su rotte attive.
 **Tipi di errore da correggere** (casi A-E):
 
 ```
-Caso A — attributo HTML con espressione JSP:
+Caso A - attributo HTML con espressione JSP:
   PRIMA: label="<%= multiLang.getLabel(id_lingua, "label.salva") %>"
   DOPO:  label='<%= multiLang.getLabel(id_lingua, "label.salva") %>'
 
-Caso B — jsp:param con valore JSP:
+Caso B - jsp:param con valore JSP:
   PRIMA: <jsp:param name="id" value="<%= one.get("id") %>" />
   DOPO:  <jsp:param name="id" value='<%= one.get("id") %>' />
 
-Caso C — direttiva include:
+Caso C - direttiva include:
   PRIMA: <%@ include file="contatti.jspf" %>
   DOPO:  <%@ include file='contatti.jspf' %>
 
-Caso D — char literal Java multi-carattere:
+Caso D - char literal Java multi-carattere:
   PRIMA: one.get('id')         DOPO: one.get("id")
 
-Caso E — confronto con char literal:
+Caso E - confronto con char literal:
   PRIMA: if(one.get("fl_sms") == 'S')
   DOPO:  if("S".equals(one.get("fl_sms")))
 ```
@@ -251,7 +251,7 @@ URL Solr nell'app. Sconsigliato per un gestionale a consultazione statica con po
 Mai testato un restore from-scratch. Da pianificare: host vergine Ubuntu 24.04, restore di
 backup-stack-config + backup-db + alberi getrad/solr. Procedure in `README.md`.
 
-## Errori operativi noti — da NON ripetere
+## Errori operativi noti - da NON ripetere
 
 1. **Conflitto IP fra VM809 e VM810** quando entrambe avevano .90. Causa cascata di problemi
    (SSH tagliato, web UI Proxmox temporaneamente inaccessibile). Risoluzione: spegnere la VM

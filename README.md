@@ -6,12 +6,12 @@ Documento di riferimento per l'amministrazione dello stack containerizzato getra
 
 Lo stack gira interamente come Docker compose sulla VM810. Due container:
 
-- `getrad-db` — MariaDB 10.3.39 (immagine `mariadb:10.3`)
+- `getrad-db` - MariaDB 10.3.39 (immagine `mariadb:10.3`)
   - Datadir bind mount: `/srv/getrad-stack/data/mariadb`
   - Config aggiuntive: `/srv/getrad-stack/build/db-conf/`
   - Porta interna 3306, NON esposta sull'host
 
-- `getrad-app` — Tomcat 9 + OpenJDK 8 (immagine custom basata su `tomcat:9-jdk8`)
+- `getrad-app` - Tomcat 9 + OpenJDK 8 (immagine custom basata su `tomcat:9-jdk8`)
   - Webapp getrad bind mount: `/srv/getrad-stack/extracted/getrad`
   - Solr home bind mount: `/srv/getrad-stack/extracted/solr`
   - Build context: `/srv/getrad-stack/build/app/`
@@ -70,9 +70,9 @@ sudo /usr/local/sbin/getrad-backup.sh monthly
 
 Ogni backup produce 3 file zstd-compressi più un SHA256SUMS:
 
-- `getrad-db-{mode}-YYYY-MM-DD.sql.zst` — dump SQL del DB
-- `getrad-conf-{mode}-YYYY-MM-DD.tar.zst` — config applicativa (WEB-INF/conf)
-- `getrad-stack-config-{mode}-YYYY-MM-DD.tar.zst` — config infrastrutturale (compose, Dockerfile)
+- `getrad-db-{mode}-YYYY-MM-DD.sql.zst` - dump SQL del DB
+- `getrad-conf-{mode}-YYYY-MM-DD.tar.zst` - config applicativa (WEB-INF/conf)
+- `getrad-stack-config-{mode}-YYYY-MM-DD.tar.zst` - config infrastrutturale (compose, Dockerfile)
 
 ### Verifica integrità
 
@@ -246,9 +246,9 @@ NON `INFO, APP, MAIL`. Senza questa modifica l'app prova a inviare mail SMTP a s
 
 Posti dove si accumula spazio:
 
-- `/srv/getrad-stack/extracted/getrad/WEB-INF/logs/` — gestiti da logrotate
-- `/srv/getrad-stack/backups/` — retention 30/190 giorni
-- `/var/lib/docker/` — immagini e container vecchi: `docker system prune -af`
+- `/srv/getrad-stack/extracted/getrad/WEB-INF/logs/` - gestiti da logrotate
+- `/srv/getrad-stack/backups/` - retention 30/190 giorni
+- `/var/lib/docker/` - immagini e container vecchi: `docker system prune -af`
 
 ## Manutenzione periodica
 

@@ -2,7 +2,153 @@
 
 > Append-only, in ordine cronologico inverso (la voce più recente in alto).
 
-## 2026-06-19 — Sincronizzazione iniziale delle schede di contesto
+## 2026-06-19 - Promozione dei fix JSP in produzione (allineamento prod a test)
+
+Commit: fuori repo (host VM810) + schede `.claude/`
+File toccati: `/srv/getrad-stack/extracted/getrad/jsp/` (103 file), `backups/`, schede `.claude/`
+Motivo: la produzione era ancora rotta sui moduli sistemati solo in test (ordini, fatture,
+provvigioni, riepiloghi, traduttori, lead e altri davano 500), mentre i tre utenti di produzione
+iniziavano ad accedere via nome amichevole. Decisione condivisa: allineare produzione a test ora,
+proseguendo la verifica funzionale in test.
+
+Razionale di rischio: i 103 file promossi erano esattamente quelli oggi rotti in produzione; le
+pagine che gia' funzionavano non sono tra questi, perche' con il difetto di quoting darebbero 500.
+Quindi la promozione poteva solo trasformare un 500 in pagina compilabile, senza regredire pagine
+funzionanti. Correzione deterministica, 7 rotte gia' verificate a runtime.
+
+Esecuzione: backup dell'albero JSP di produzione in `backups/getrad-jsp-prod-pre-promote-2026-06-19.tar.zst`
+con SHA256; copia per contenuto (rsync --checksum, solo `jsp/`, niente configurazione quindi mailer
+di prod invariato) di 103 file da test a prod; ripristino proprieta' uniforme intrawelt:intrawelt;
+ricompilazione Jasper di produzione. Verifica: app prod healthy, rotte chiave 302, censimento su
+8080 con 234 pagine che compilano, zero bug di quoting, stesse 24 pagine altro di test. Produzione
+e test allineati. Mailer di produzione non toccato. Le quattro pagine non di quoting restano 500
+come in test.
+
+## 2026-06-19 - Nome amichevole egetrad e reverse proxy su porta 80
+
+Commit: fuori repo (host VM810) + schede `.claude/`
+File toccati: `/srv/getrad-stack/proxy/` (nginx.conf, docker-compose.yml), `getrad-firewall.sh`,
+schede `.claude/`
+Motivo: consentire agli utenti di produzione di raggiungere il gestionale con un nome amichevole
+e una rotta di login facile, su PC Windows 11.
+
+Introdotto un reverse proxy nginx sulla porta 80 (container `getrad-proxy`, progetto compose
+separato agganciato alla rete di produzione come esterna, compose di produzione intatto). Radice e
+`/egetrad-login` reindirizzano al login, il resto e' proxato verso `getrad-app:8080`. Verificato in
+locale: ingresso e proxy rispondono 200, redirect corretti. Firewall esteso: porta 80 ammessa agli
+stessi quattro IP della produzione, 8090 resta solo all'amministrazione; script firewall aggiornato
+e riapplicato. Scelta in ADR-011.
+
+Lato client serve aggiungere al file hosts dei PC autorizzati la mappatura di `egetrad` ed
+`egetrad-login` su 192.168.20.90 (nessun DNS interno gestibile). Caveat legacy annotato: l'app
+genera alcune URL assolute verso `egetrad.intrawelt.com:8080`, da gestire a parte se daranno
+problemi sulla LAN. Produzione applicativa intatta, nessun JSP promosso.
+
+## 2026-06-19 - Allowlist di rete (Fase 6) e audit degli account di login
+
+Commit: fuori repo (host VM810) + schede `.claude/`
+File toccati: `/srv/getrad-stack/firewall/` (script e backup iptables),
+`/etc/systemd/system/getrad-firewall.service`, `_notes/` (export non versionato), schede
+`.claude/context/` e `.claude/memory/`
+Motivo: avvio della Fase 6 della roadmap (restrizione accesso ai soli IP statici LAN) e richiesta
+di audit degli account che accedono al gestionale.
+
+Allowlist di rete: applicata in `DOCKER-USER` (non UFW, che Docker bypassa per le porte pubblicate)
+filtrando sulla porta di destinazione originale via conntrack. Produzione 8080 consentita a
+192.168.10.80, .81, .206, .73; test 8090 alla sola .73. Script idempotente
+`/srv/getrad-stack/firewall/getrad-firewall.sh`, reso persistente da `getrad-firewall.service`
+(After=docker, abilitato). Backup iptables pre-modifica salvato. Verificato: regole presenti e
+idempotenti, sopravvivono al restart di Docker, accesso locale host ancora 200, SSH non coinvolto.
+Manca la verifica empirica del blocco da una postazione non autorizzata. Scelta motivata in ADR-010.
+
+Audit account di login (tabella `an_utenti`): circa 8.200 account loggabili, di cui 8.129
+Traduttori e 76 Contatti (self-service esterni) e una decina di account interni di staff. Tutte le
+password sono hash MD5 a 32 cifre esadecimali, non testo in chiaro, quindi non recuperabili in
+chiaro. Finding di sicurezza per la Fase 7: MD5 probabilmente non salato, debole; alcune password
+mai cambiate da anni (un operatore fermo al 2007). Export completo username e hash in
+`_notes/utenti_loggabili_2026-06-19.csv`, non versionato (le schede non contengono credenziali).
+
+## 2026-06-19 - Censimento completo e patching massivo del quoting JSP su test
+
+Commit: fuori repo (modifiche su albero test in `/srv/getrad-stack/test/`) + schede `.claude/`
+File toccati: ~90 file `.jsp`/`.jspf` sotto `/srv/getrad-stack/test/extracted/getrad/jsp/`,
+`.claude/context/`, `.claude/memory/`
+Motivo: l'utente ha confermato che le sette rotte pending rendono bene nel browser e ha chiesto
+un giro completo per confermare in via definitiva che l'intera applicazione e' funzionante.
+
+Metodo: censimento deterministico di tutte le 253 pagine `.jsp` su test (porta 8090) tramite
+richiesta HTTP e classificazione dell'esito. Una pagina che redirige al login (302) ha superato
+la compilazione Jasper; una rotta rotta resta 500 anche senza login. Prima passata: 163 compilano,
+72 con il bug di quoting Caso A/B, 18 altri errori. Le sette rotte gia' note erano tra le 72.
+
+Correzione massiva: script Perl deterministico che converte gli attributi di soli tag `skn:*` e
+azioni `jsp:*` la cui valore e' uno scriptlet `="<%= ... %>"` con doppi apici interni, portandoli
+ad apici singoli esterni. Vincoli di sicurezza appresi e applicati: si interviene solo su righe con
+tag `skn:`/`jsp:` (Jasper non applica la regola agli attributi HTML di template, confermato
+empiricamente), solo su scriptlet singoli ancorati alla virgoletta di chiusura (niente spanning tra
+attributi), solo se l'espressione non contiene apici singoli. Elaborazione a byte perche' i file
+sono Latin-1, non UTF-8. Snapshot dell'albero jsp prima della modifica. Un primo tentativo con
+regex non ancorata aveva corrotto alcune righe `<img src="<%=...%>/x.png">` ed e' stato annullato
+da snapshot prima di qualsiasi compilazione.
+
+Due casi a quoting misto (`traduttori/_comb_ling.jspf`, `_comb_ling_int.jspf`: espressione
+`"javascript:settori('"+n_comb+"');"` con doppi e singoli apici) corretti a mano usando l'escape
+unicode Java `'` per i singoli apici, mantenendo apici singoli esterni.
+
+Esito finale (sweep ripetuto): 229 delle 253 pagine compilano, zero bug di quoting residui. La
+migrazione del quoting JSP per Tomcat 9 e' completa su test. Le 24 pagine ancora 500 non sono bug
+di quoting: sono in larga parte frammenti inclusi (falliscono solo se aperti da soli, funzionano
+tramite la pagina genitore che compila), piu' la pagina gestore errori `error.jsp` e una pagina di
+test, piu' un piccolo gruppo di pagine reali con un problema diverso e preesistente (variabili o
+campi non risolti, non quoting): `comb_ling_complex.jsp` (`isCont`, `isMaintenanceMode`),
+`revisioni.jsp` (`ric_rev_int`, `prefs`), `preventivo0.jsp` e `preventivo1.jsp`
+(`GlobalDef.PRE_TEMPLATE`). Questi ultimi richiedono il parere di dominio sull'effettivo utilizzo.
+
+Investigazione dei quattro casi: `GlobalDef.PRE_TEMPLATE` non esiste nel codice compilato in
+`getrad.jar`, quindi `preventivo0/1.jsp` non sono correggibili a livello JSP senza il sorgente;
+`comb_ling_complex.jsp` include `templateTop.jspf` senza definire `isCont`/`isMaintenanceMode`
+(che le pagine complete ottengono includendo `_include/login.jspf`). Nessuno e' un fix rapido e
+l'utilizzo non e' confermato, quindi sono lasciati fuori dal patching. Creato
+`CAMMINATA_VERIFICA.md` alla radice del repository: piano di prova manuale completo, per modulo,
+da usare quando si schedula la verifica nel browser.
+
+Tutte le modifiche sono su test. Produzione intatta. Nulla promosso.
+
+## 2026-06-19 - Backup pre-patching e predisposizione ambiente di test sulla LAN
+
+Commit: fuori repo (infrastruttura su VM810) + schede `.claude/` aggiornate (commit manuale
+dell'utente)
+File toccati: `/srv/getrad-stack/backups/` (nuovo backup pre-patching), `/srv/getrad-stack/test/`
+(nuovo progetto compose, codice, Solr, datadir, script), `.claude/memory/` e `.claude/context/`
+Motivo: ripresa dal punto di `index.md` (backup pre-patching, poi `fornitori/insupdfornitore.jsp`)
+con il requisito aggiuntivo di servire sulla LAN sia un ambiente di test per verificare le
+modifiche sia quello di produzione per l'uso normale, dallo stesso host.
+
+Backup pre-patching prodotto e verificato in `/srv/getrad-stack/backups/`:
+`getrad-db-pre-patching-2026-06-19.sql.zst` (dump completo, 19 routine, trailer "Dump completed",
+prodotto come `root@localhost` via socket perché l'utente `getrad` non ha privilegi su
+`mysql.proc`) e `getrad-code-pre-patching-2026-06-19.tar.zst` (albero codice 284 MiB, esclusi i
+quindici gibibyte di `files/` e il `tmp/` rigenerabile). Checksum in `SHA256SUMS-pre-patching-2026-06-19`,
+riverificati OK.
+
+Ambiente di test (progetto compose `getrad-test`, vedi ADR-007/008/009): codice copiato in
+`/srv/getrad-stack/test/extracted/getrad/` (293M), Solr copiato per intero (9.5G), allegati
+`files/` montati da produzione in sola lettura, datadir DB proprio inizializzato fresco e
+seminato dal dump pre-patching (86 tabelle e 19 routine, identico a prod). App di test sulla
+porta 8090 riusando l'immagine `getrad-stack-app:latest`. Mailer applicativo disattivato nella
+copia di test. Aggiunti `test/promote-to-prod.sh` e `test/recompile-test.sh`.
+
+Verifiche al termine: entrambi gli ambienti healthy (prod 8080, test 8090), `Login.jsp` su test
+HTTP 200, isolamento DB confermato (alias `db` risolve al solo `getrad-test-db`, app di test su
+sola rete `getrad-test_getrad-net`), rotta `fornitori/insupdfornitore.jsp` HTTP 500 sia su test
+sia su prod (test riproduce fedelmente il bug noto), `files/` in sola lettura. Produzione non
+toccata. Disco passato da 111G a 121G usati su 250G.
+
+Discrepanze rilevate rispetto alla documentazione esistente, da correggere nelle schede: il
+docBase del context fragment è `/usr/skn/getrad` (non `/usr/local/tomcat/webapps/getrad`); UFW
+risulta `inattivo` sull'host nonostante il work-log lo desse configurato.
+
+## 2026-06-19 - Sincronizzazione iniziale delle schede di contesto
 
 Commit: 4f686bf
 File toccati: `.claude/context/` (tutte le schede), `.claude/memory/` (tutte le schede),
@@ -13,9 +159,9 @@ Stato del patching JSP (Fase 5) mappato in `current-work.md`. Roadmap aggiornata
 `roadmap.md`. HANDOFF_getrad.md aggiornato con lo stato completo del patching JSP e i
 path corretti per VM810.
 
-## 2026-06-19 — Bootstrap repository git e struttura progetto (Windows)
+## 2026-06-19 - Bootstrap repository git e struttura progetto (Windows)
 
-Commit: 4f686bf — "Initial commit: documentazione migrazione getrad + adozione standard di
+Commit: 4f686bf - "Initial commit: documentazione migrazione getrad + adozione standard di
 progetto"
 File toccati: `CLAUDE.md`, `.gitignore`, `.claude/`, `README.md`, `GETRAD_TOMCAT_MIGRATION.md`,
 `getrad.properties.example`
@@ -24,7 +170,7 @@ Motivo: primo push del repository `getrad-migration` su GitHub. Identità
 `core.sshCommand` fissato su OpenSSH di sistema (Windows). `getrad.properties` confermato
 gitignored (segreti non esposti, leak_segreti=0).
 
-## 2026-05 — Containerizzazione stack su VM810 (Ubuntu 24.04 LTS)
+## 2026-05 - Containerizzazione stack su VM810 (Ubuntu 24.04 LTS)
 
 Commit: fuori repo (modifiche dirette su VM810, nessun git)
 File toccati: `/srv/getrad-stack/` su VM810
@@ -41,7 +187,7 @@ Passi eseguiti:
   thunderbird, cloud-init. Disabilitati servizi non necessari. Target multi-user.target
 - Installazione Docker CE + Compose plugin da repo ufficiale download.docker.com
 - Costruzione docker-compose.yml + Dockerfile app (tomcat:9-jdk8, COPY solr.war, COPY
-  context fragment getrad.xml, COPY catalina-skip.properties — startup da 147s a 9.5s)
+  context fragment getrad.xml, COPY catalina-skip.properties - startup da 147s a 9.5s)
 - Patch configurazione app: JDBC URL `127.0.0.1:3306` → `db:3306`, Solr `localhost` → `db`
 - Rimosso MAIL appender da log4j: eliminati timeout multipli-secondi per connessione
   smtp.office365.com non raggiungibile dal container
@@ -59,7 +205,7 @@ Tomcat ~10s, backup test OK, spazio 110 GiB su 250 GiB.
 VM809 rimossa da Proxmox (`qm destroy 809 --purge`). Safety net vzdump del 4-5 maggio 2026
 conservato su NAS aziendale.
 
-## 2026-02-11 al 2026-02-18 — Patching JSP Tomcat 6 → Tomcat 9 (VM809, Ubuntu 20.04)
+## 2026-02-11 al 2026-02-18 - Patching JSP Tomcat 6 → Tomcat 9 (VM809, Ubuntu 20.04)
 
 Commit: fuori repo (modifiche dirette su VM809)
 File toccati: `/usr/skn/getrad/jsp/` su VM809 (ora in `/srv/getrad-stack/extracted/getrad/jsp/`)

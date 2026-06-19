@@ -25,6 +25,25 @@ Data snapshot:          2026-06-19
 
 ## Punto di ripresa
 
-SSH su VM810 (`ssh intrawelt@192.168.20.90`), eseguire backup pre-patching con il comando
-in `deployment.md`, poi iniziare con `fornitori/insupdfornitore.jsp` (errori noti alle
-righe 369, 370, 672, 713, 714 — vedi `current-work.md` per dettagli e rotta di test).
+Stato al 2026-06-19, fine giornata. Fatto: backup pre-patching verificato in
+`/srv/getrad-stack/backups/`; ambiente di test attivo e isolato sulla LAN (progetto `getrad-test`,
+porta 8090; vedi ADR-007/008/009); migrazione quoting JSP completa su test (229/253 pagine
+compilano, zero bug di quoting residui, sweep deterministico); piano di camminata funzionale in
+`CAMMINATA_VERIFICA.md`; allowlist di accesso LAN applicata e persistente via systemd
+(`getrad-firewall.service`, regole in `DOCKER-USER`, vedi ADR-010 e `deployment.md`); nome
+amichevole `egetrad`/`egetrad-login` su porta 80 tramite reverse proxy nginx in
+`/srv/getrad-stack/proxy/` (ADR-011), con la 80 nell'allowlist. Migrazione quoting JSP
+promossa in produzione il 2026-06-19: produzione allineata a test (234 pagine compilano, zero bug
+di quoting), backup pre-promozione in `backups/getrad-jsp-prod-pre-promote-2026-06-19.tar.zst`.
+Mailer di produzione non ancora toccato.
+
+Tutto lo stato operativo vive su disco su VM810 ed e' ripristinabile: albero di test in
+`/srv/getrad-stack/test/`, script firewall in `/srv/getrad-stack/firewall/` con backup iptables
+pre-modifica, export utenti loggabili (con hash MD5) in `_notes/` non versionato.
+
+Prossimi passi: schedulare la camminata di verifica funzionale nel browser seguendo
+`CAMMINATA_VERIFICA.md`, che l'utente esegue in test (ogni problema runtime si corregge in test e
+si ripromuove con `test/promote-to-prod.sh`); proseguire la roadmap di sicurezza (Fase 7 hardening
+legacy, incluso il debito sull'hashing MD5 delle password); completare la mappatura hosts sui PC di
+Sonia ed Elisa. Quattro pagine restano non risolte per problemi non di quoting (vedi
+`current-work.md`), in attesa di conferma sul loro utilizzo.

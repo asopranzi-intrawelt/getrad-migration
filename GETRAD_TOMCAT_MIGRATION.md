@@ -1,4 +1,4 @@
-# Migrazione getrad: Tomcat 6 → Tomcat 9 — stato al 18/02/2026
+# Migrazione getrad: Tomcat 6 → Tomcat 9 - stato al 18/02/2026
 
 Questo documento sintetizza lo stato di avanzamento della migrazione
 dell'applicazione JSP "getrad" da Tomcat 6 (Ubuntu 10.04) a Tomcat 9
@@ -49,7 +49,7 @@ La regola è: **apici singoli esterni all'attributo HTML, doppi apici interni al
 
 ## Tutti i casi di errore da correggere
 
-### Caso A — label, href, alt, value con JSP expression e doppi apici interni
+### Caso A - label, href, alt, value con JSP expression e doppi apici interni
 
 ```jsp
 <!-- PRIMA -->
@@ -61,7 +61,7 @@ label='<%= multiLang.getLabel(id_lingua, "label.salva") %>'
 href='<%=path_base+"/jsp/clienti/insupdcliente.jsp" %>'
 ```
 
-### Caso B — jsp:param con valore JSP e doppi apici interni
+### Caso B - jsp:param con valore JSP e doppi apici interni
 
 ```jsp
 <!-- PRIMA -->
@@ -71,7 +71,7 @@ href='<%=path_base+"/jsp/clienti/insupdcliente.jsp" %>'
 <jsp:param name="id_appaltatore" value='<%= one.get("id") %>' />
 ```
 
-### Caso C — direttiva include dentro markup HTML
+### Caso C - direttiva include dentro markup HTML
 
 ```jsp
 <!-- PRIMA -->
@@ -81,7 +81,7 @@ href='<%=path_base+"/jsp/clienti/insupdcliente.jsp" %>'
 <%@ include file='contatti.jspf' %>
 ```
 
-### Caso D — char literal Java con più di un carattere (errore "Invalid character constant")
+### Caso D - char literal Java con più di un carattere (errore "Invalid character constant")
 
 ```java
 // PRIMA (Java illegale: 'id' non è un char, è due caratteri)
@@ -93,7 +93,7 @@ one.get("id")
 one.get("id_categoria")
 ```
 
-### Caso E — confronto stringa con char literal
+### Caso E - confronto stringa con char literal
 
 ```java
 // PRIMA
@@ -205,8 +205,8 @@ Questi file producono ancora HTTP 500 al 18/02/2026 o non sono mai stati toccati
 
 | File | Errore noto | Route di test |
 |---|---|---|
-| `fornitori/insupdfornitore.jsp` | righe 369, 370, 672, 713, 714 — `one.get('id')` alla riga 672 | `http://192.168.20.90:8080/getrad/jsp/fornitori/insupdfornitore.jsp?id=13577496633860` |
-| `preventivi/_combinazione.jsp` | HTTP 500 "Unable to compile class for JSP" — log in `HTTP500_combinazione_log.txt` | `http://192.168.20.90:8080/getrad/jsp/preventivi/_combinazione.jsp` |
+| `fornitori/insupdfornitore.jsp` | righe 369, 370, 672, 713, 714 - `one.get('id')` alla riga 672 | `http://192.168.20.90:8080/getrad/jsp/fornitori/insupdfornitore.jsp?id=13577496633860` |
+| `preventivi/_combinazione.jsp` | HTTP 500 "Unable to compile class for JSP" - log in `HTTP500_combinazione_log.txt` | `http://192.168.20.90:8080/getrad/jsp/preventivi/_combinazione.jsp` |
 | `ordini/index.jsp` | line 211 col 56: `multiLang.getLabel(id_lingua, "label.cerca")` | `http://192.168.20.90:8080/getrad/jsp/ordini/index.jsp` |
 | `fatture/index.jsp` | line 155 → via `fatture/index_tr.jspf` line 78 → `fatture/fatture_tr.jspf` line 479 | `http://192.168.20.90:8080/getrad/jsp/fatture/index.jsp` |
 | `traduttori/banca.jsp` | mai toccato | |
@@ -293,7 +293,7 @@ nei problemi JSP attuali.
 
 ## Prossimo step
 
-1. Fixare `fornitori/insupdfornitore.jsp` (priorità alta — usato per inserimento fornitori)
+1. Fixare `fornitori/insupdfornitore.jsp` (priorità alta - usato per inserimento fornitori)
 2. Investigare `preventivi/_combinazione.jsp` (l'HTTP 500 ha un log allegato `HTTP500_combinazione_log.txt`)
 3. Procedere per `ordini/index.jsp`, `fatture/index.jsp`, `provvigioni/index.jsp`, `riepiloghi/index.jsp`
 4. Poi passare ai file "mai toccati" della lista: traduttori, lead, societa, ecc.
