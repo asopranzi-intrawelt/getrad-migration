@@ -1,0 +1,40 @@
+# === SEGRETI — mai versionare ===
+# getrad.properties contiene password Office365, password DB e token in chiaro.
+# Il riferimento versionato e getrad.properties.example (segreti mascherati).
+*.properties
+!*.properties.example
+CLAUDE.local.md
+.claude/settings.local.json
+.claude/memory/*.local.md
+
+# === Artefatti legacy di migrazione (restano locali / backup Proxmox) ===
+old/
+appoggio_da_ubuntu_10_04/
+*.lnk
+
+# === Binari e archivi ===
+*.zip
+*.7z
+*.rar
+*.tar
+*.gz
+*.zst
+*.exe
+*.msi
+
+# === Documenti Office grezzi (il contenuto utile vive nei .md) ===
+*.docx
+*.doc
+*.ppt
+*.pptx
+*.xls
+*.xlsx
+*.pdf
+
+# === Standard privato + temporanei ===
+_notes/
+~$*
+*.tmp
+.DS_Store
+Thumbs.db
+desktop.ini

@@ -1,0 +1,985 @@
+﻿################ Parametri per il logging dell'applicazione
+log4j.logger.ApplicationLogger=INFO, APP, MAIL
+log4j.appender.APP=org.apache.log4j.RollingFileAppender
+log4j.appender.APP.File=/usr/skn/getrad/WEB-INF/logs/Application.log
+log4j.appender.APP.MaxFileSize=10000KB
+log4j.appender.APP.MaxBackupIndex=10
+log4j.appender.APP.layout=org.apache.log4j.PatternLayout
+# Print the date in ISO 8601 format
+log4j.appender.APP.layout.ConversionPattern=%d [%t] %-5p %c - %m%n
+# Encoding per log4j..
+# log4j.appender.APP.Encoding=UTF-8
+
+################ Parametri per il logging degli accessi (formato csv)
+log4j.logger.AccessLogger=DEBUG, ACC
+log4j.appender.ACC=org.apache.log4j.RollingFileAppender
+log4j.appender.ACC.File=/usr/skn/getrad/WEB-INF/logs/Accesses.csv
+log4j.appender.ACC.MaxFileSize=100000KB
+log4j.appender.ACC.MaxBackupIndex=10
+log4j.appender.ACC.layout=org.apache.log4j.PatternLayout
+# Print the date in ISO 8601 format
+log4j.appender.ACC.layout.ConversionPattern=%d [%t] ; %-5p ; %m%n
+
+################ Parametri per il logging tramite mail dei soli errori
+# The number of logging events delivered in this e-mail depend on the value of BufferSize option.
+# The SMTPAppender keeps only the last BufferSize logging events in its cyclic buffer.
+# This keeps memory requirements at a reasonable level while still delivering useful application context.
+# By default, an email message will be sent when an ERROR or higher severity message is appended.
+log4j.appender.MAIL=skn.util.logger.FilteredSMTPAppender
+# il numero di eventi inviati nell'email dipende da questo parametro
+log4j.appender.MAIL.BufferSize=1
+# debug mail session su stdout
+log4j.appender.MAIL.SMTPDebug=false
+log4j.appender.MAIL.SMTPHost=smtp.office365.com
+# se il server non richiede autenticazione commentare queste due
+log4j.appender.MAIL.SMTPUsername=egetrad@intrawelt.com
+log4j.appender.MAIL.SMTPPassword=__SET_ME__
+log4j.appender.MAIL.From=egetrad@intrawelt.com
+log4j.appender.MAIL.Subject=Monitor Errori
+# lista dei destinatari (separati da virgola se multipli)
+log4j.appender.MAIL.To=egetrad@intrawelt.com
+log4j.appender.MAIL.cc=
+log4j.appender.MAIL.bcc=
+#
+log4j.appender.MAIL.layout=org.apache.log4j.PatternLayout
+#log4j.appender.MAIL.layout.ConversionPattern=%d [%t] %-5p %c %x - %m%n
+log4j.appender.MAIL.layout.ConversionPattern=%p %t %c.%m%n
+#parametri aggiuntivi per il FilteredSMTPAppender, numero massimo di mail nel timeframe, se c'è bisogno del TLS
+log4j.appender.MAIL.TimeFrame=30
+log4j.appender.MAIL.MaxEMails=10
+log4j.appender.MAIL.TLS=true
+
+################ Parametri del Database Connection Pool
+util.ConnectionManager.Driver=com.mysql.jdbc.Driver
+util.ConnectionManager.DbServer=jdbc:mysql://127.0.0.1:3306/getrad
+util.ConnectionManager.DbUserName=getrad
+util.ConnectionManager.DbPassword=__SET_ME__
+util.ConnectionManager.MaxConn=5
+util.ConnectionManager.MinConn=2
+# Tempo in giorni per un connection-reset (cleanup)
+util.ConnectionManager.MaxTimeConn=0.2
+############### se 0 disattiva il rilascio forzato della risorsa.
+util.ConnectionManager.MaxCheckoutSeconds=0
+util.ConnectionManager.LogFile=/usr/skn/getrad/WEB-INF/logs/ConnectionManager.log
+util.ConnectionManager.TestQuery=select count\(*\) from an_utenti
+util.ConnectionManager.logAppend=N
+##############0 nulla, 1 error, 2 warn, info
+util.ConnectionManager.debugLevel=2
+
+################ Cartelle Web
+common.base=/getrad
+common.images=/getrad/images
+common.js=/getrad/js
+common.jsp=/getrad/jsp
+common.css=/getrad/css
+common.files=/getrad/files
+common.client.images=/usr/skn/getrad/images/clienti/
+################ URL nuovo sito web (per i preventivi web e il form contatti, per il redirect)
+sitoweb.url.0 = http://www.intrawelt.com/en/
+sitoweb.url.1 = http://www.intrawelt.com/it/
+sitoweb.url.2 = http://www.intrawelt.com/fr/
+sitoweb.url.3 = http://www.intrawelt.com/de/
+sitoweb.url.4 = http://www.intrawelt.com/es/
+
+################ Nome Applicazione
+common.appname=eGeTrad
+common.logoTop=/getrad/images/logoTop.jpg
+common.email.subject.pre=
+
+################ Parametri Generici Servlet
+util.GeneralServlet.LogInit=ON
+util.GeneralServlet.LogRequestParameters=ON
+
+################ Parametri per il Login
+login.UrlLogin=/getrad/jsp/Login.jsp
+login.UrlLoginTimeOut=/getrad/jsp/utenti/cambio_password.jsp
+login.UrlPrivacy=/getrad/jsp/utenti/privacy.jsp
+login.UrlPrivacyCl=/getrad/jsp/clienti/area/insUpdCont.jsp
+login.UrlLiberatoria=/getrad/jsp/utenti/liberatoria##ID_LINGUA##.html
+login.UrlLiberatoriaCl=/getrad/jsp/utenti/liberatoria_cl##ID_LINGUA##.html
+login.PathLiberatoria=/usr/skn/getrad/jsp/utenti/liberatoria##ID_LINGUA##.html
+login.PathLiberatoriaCl=/usr/skn/getrad/jsp/utenti/liberatoria_cl##ID_LINGUA##.html
+login.UrlPrivacy2=http://egetrad.intrawelt.com:8080/getrad/Privacy2
+login.UrlHome=/getrad/
+login.PassMaxTime=6
+login.UrlBase=http://egetrad.intrawelt.com:8080/getrad/
+#login.TextTimeOut=In riferimento al rispetto delle misure minime di cui agli artt. 33, 34,35 e 36 del D.LGS. 196/2003 che, nel disciplinare tecnico sub allegato (B) al punto n.5, detta le regole per la corretta gestione delle credenziali di accesso ad un sistema informativo, la durata dell'utilizzo di una password non deve superare i @@tempolimite@@ mesi e deve essere composta da almeno otto caratteri alfanumerici.<br/> La informiamo che la password di questo account è scaduta il @@datascadenza@@, quindi la durata dell'utilizzo della password è maggiore del tempo indicato dalla normativa vigente.<br/>Per questo motivo la invitiamo a modificare la password nel rispetto delle norme sopra citate.
+
+################ Parametri per la pagina errore (adesso solo il 404 è gestito nel web.xml)
+error.error404page=/getrad/jsp/error.jsp
+error.secToRedirect=10
+
+################ Parametri per la pagina di manutenzione
+manut.page=/getrad/jsp/maintenance.jsp
+manut.page_adm=/getrad/jsp/update/maintenanceMode.jsp
+
+################ Parametri per la ricerca
+search.enable=S
+search.enable.thread=S
+search.sleep=10000000
+search.sleep.delta=120000
+search.sleep.min=20000
+search.url=http://localhost:8080/solr/select/
+search.update.url.abs=http://localhost:8080/solr/dataimport?command=
+search.update.url=../../../solr/dataimport?command=
+search.update.delta=delta-import
+search.update.full=full-import
+search.update.status=status
+search.tracking=N
+
+################ Parametri ordine utenti
+ordini.cli.fs=/usr/skn/getrad/files/ordini_cli/
+ordini.cli.path=/getrad/files/ordini_cli
+
+################ Parametri preventivi utenti
+preventivi.cli.fs=/usr/skn/getrad/files/preventivi_cli/
+preventivi.cli.path=/getrad/files/preventivi_cli
+
+#Tipo di servizi abilitati per i QuickOrder e i preventivi nell'area clienti
+ord.serv.area_clienti=1,13994589045170,15,14060214906707,16,19,14060214906702,14232324440980,12281385632442
+
+################ Parametri utenti
+utenti.fs=/usr/skn/getrad/files/utenti/
+utenti.path=/getrad/files/utenti
+utenti.firma.default=/usr/skn/getrad/files/utenti/FirmaDefault.htm
+
+################ Parametri di upload
+upload.MaxMemorySize=102400
+# 50MB
+upload.MaxRequestSize=52428800
+upload.RepositoryPath=/usr/skn/getrad/files/
+upload.tmp = /usr/skn/getrad/tmp
+
+################ Versione JavaScript (serve per evitare il caching del browser ad un nuovo rilascio)
+js.num=69
+
+################ Autocompletion
+autocomplete.limit=100
+
+################ Agenzia
+agenzia.nome=Gestione Traduzioni
+
+################ Societa
+soc.upload.RepositoryPath=/usr/skn/getrad/files/societa/
+soc.file_url=/getrad/files/societa
+
+################ Conti Correnti
+cc.upload.RepositoryPath=/usr/skn/getrad/files/ccs/
+cc.file_url=/getrad/files/ccs
+
+################ Numeri
+tariffe.decimali=4
+tariffe.separatore.decimali=,
+tariffe.separatore.migliaia=.
+tariffe.totali.decimali=2
+tariffe.medie.decimali=1
+
+################ Anagrafica Clienti
+cli.nazione.default=104
+cli.nazione_iso.default=IT
+cli.profilo.esportatore=2
+cli.profilo.condomini=11
+cli.profilo.splitpayment=9
+cli.profilo.sanmarino=10,7
+cli.bollo2=2.00
+cli.exp_soglia_fatt=77.47
+# id pagamento che non possono essere scelti per clienti esteri (vengono usati nel javascript)
+cli.pagamento.not_estero='12057683565811','12057683565812','12057683565813','12057683565814','12057683565815','12057683565816'
+# id pagamento RiBa (vengono usati nel javascript)
+cli.pagamento.riba='12057683565811','12057683565812','12057683565813','12057683565814','12057683565815','12057683565816','12057683565817','12057683565935','91726763780480'
+# validazione partita iva con Web Service
+cli.piva_ws.enable=S
+#id_tipologia cliente= privato, basta il cf per avere un profilo fiscale valido
+cli.tipologia.privato=12266755971110
+nazione.italia=104
+nazione.germania=80
+
+################ Anagrafica Traduttori
+trad.upload.RepositoryPath=/usr/skn/getrad/files/traduttori/
+trad.file_url=/getrad/files/traduttori
+trad.skype.howto=http://support.skype.com/index.php?_a=knowledgebase&_j=questiondetails&_i=605
+trad.italia=104
+trad.daysWhileNew=30
+trad.maxDaysLinkInvoiceIsActive=30
+trad.id_categoria.societa=12057683564561
+# Questo id corrisponde a "Professionista o ditta estera"
+trad.cat_estero=12057683564566
+# Registrazione Traduttori
+trad.conferma_url=http://egetrad.intrawelt.com:8080/getrad/Conferma?id=
+trad.banca_url=http://egetrad.intrawelt.com:8080/getrad/Banca?id=
+# Conversione riga parole
+trad.parole_x_riga=25
+# validazione partita iva con Web Service
+trad.piva_ws.enable=S
+# metodi di pagamenti preferiti dai traduttori
+trad.pagamento.banca_iban=91726763780436
+trad.pagamento.banca_noiban=1710364682
+trad.pagamento.paypal=91726763780437
+#limiti per cui scattano i diversi colori delle bandierine sulla ricerca traduttori
+trad.num_prjLimit1=0
+trad.num_prjLimit2=4
+trad.num_prjLimit3=7
+#numero di elementi da mostrare nella lista dei TOP PO
+trad.num_prjTop=5
+#dimensione massima per le immagini del traduttore nel profilo (in px)
+trad.pictures.max.x=300
+trad.pictures.max.y=300
+#controllo se è il caso di attivare la pulizia dei traduttori fake [ON|OFF]
+trad.pulizia=ON
+trad.pulizia.debug=OFF
+trad.pulizia.max_num=20
+trad.pulizia.ora_inizio=0200
+trad.pulizia.num_min_gg=-100
+trad.pulizia.num_gg_avviso=7
+#password dimenticata
+trad.link.newpwd=http://egetrad.intrawelt.com:8080/getrad/jsp/traduttori/getNewPwd.jsp
+trad.link.newpwd.secret=__SET_ME__
+#pagamenti tr
+pagam.limit_date_pagamenti=10
+
+################ Seleziona Traduttore/Revisore
+# ordinamento di default
+trad.ord1.def=11768798033764
+trad.ord1.def_field=ds_traduttore
+# Campi transcod per ordinamenti
+trad.ord.1.id=11768798033762
+trad.ord.1.fl=if(fl_traduttore='S',0,1)
+trad.ord.2.id=11768798033763
+trad.ord.2.fl=if(fl_revisore='S',0,1)
+trad.ord.3.id=11768798033764
+trad.ord.3.fl=ds_traduttore
+trad.ord.4.id=11768798033765
+trad.ord.4.fl=ifnull(dispo,'A') desc
+trad.ord.5.id=11768798033766
+trad.ord.5.fl=0+split(ifnull(tr_vals,'0#0#0'),'#',2) desc
+trad.ord.6.id=11768798033767
+trad.ord.6.fl=0+split(ifnull(tr_vals,'0#0#0'),'#',1) desc
+trad.ord.7.id=11768798033768
+trad.ord.7.fl=if(split(ifnull(tr_vals,'0#0#0'),'#',1)='0',0,(0+split(ifnull(tr_vals,'0#0#0'),'#',2))/(0+split(ifnull(tr_vals,'0#0#0'),'#',1))) desc
+trad.ord.8.id=11768798033769
+trad.ord.8.fl=if(fl_traduttore='S',num_nomatch,9999)
+trad.ord.9.id=11768798033770
+trad.ord.9.fl=if(fl_traduttore='S',num_fuzzy,9999)
+trad.ord.10.id=11768798033771
+trad.ord.10.fl=if(fl_traduttore='S',num_repeat,9999)
+trad.ord.11.id=11768798033772
+trad.ord.11.fl=(9999-IFNULL(num_revisione_pa,0))
+trad.ord.12.id=11768798033773
+trad.ord.12.fl=0+if(fl_traduttore='S',tot_tr,9999999)
+trad.ord.13.id=11768798033774
+trad.ord.13.fl=0+if(fl_revisore='S',tot_rv,9999999)
+trad.ord.14.id=11768798033775
+trad.ord.14.fl=fl_cliente desc
+trad.ord.15.id=11768798033776
+trad.ord.15.fl=fl_sett desc, fl_sett_micro desc
+trad.ord.16.id=11768798033777
+trad.ord.16.fl=0+if(ds_tmz='#',99,ds_tmz)
+trad.ord.17.id=11768798033778
+trad.ord.17.fl=(100/(0+split(IFNULL(lista_revisioni,'0#0#0#0#0'),'#',1)+split(IFNULL(lista_revisioni,'0#0#0#0#0'),'#',2)+split(IFNULL(lista_revisioni,'0#0#0#0#0'),'#',3)+split(IFNULL(lista_revisioni,'0#0#0#0#0'),'#',4)+split(IFNULL(lista_revisioni,'0#0#0#0#0'),'#',5))) DESC
+trad.ord.18.id=11768798033779
+trad.ord.18.fl=(CASE WHEN Split(ds_sw, '@',4) LIKE '%2009%'THEN 1 ELSE 0  END) DESC
+trad.ord.19.id=11768798033780
+trad.ord.19.fl=(CASE WHEN Split(ds_sw, '@',4) LIKE '%2011%'THEN 1 ELSE 0  END) DESC
+trad.ord.20.id=11768798033781
+trad.ord.20.fl=(0+substrCount(Split(ds_sw, '@',2),'#')+substrCount(Split(ds_sw, '@',3),'#')+ (CASE WHEN Split(ds_sw, '@',4) LIKE '%2006%'THEN 1 ELSE 0  END)) DESC
+trad.ord.21.id=91726763780403
+trad.ord.21.fl=(CASE WHEN Split(ds_sw, '@',4) LIKE '%2007%'THEN 1 ELSE 0  END) DESC
+trad.ord.22.id=91726763780438
+trad.ord.22.fl=lavori_aperti DESC
+trad.ord.1.fl.inv=if(fl_traduttore='S',1,0)
+trad.ord.2.fl.inv=if(fl_revisore='S',1,0)
+trad.ord.3.fl.inv=ds_traduttore desc
+trad.ord.4.fl.inv=ifnull(dispo,'A')
+trad.ord.5.fl.inv=0+split(ifnull(tr_vals,'0#0#0'),'#',2)
+trad.ord.6.fl.inv=0+split(ifnull(tr_vals,'0#0#0'),'#',1)
+trad.ord.7.fl.inv=if(split(ifnull(tr_vals,'0#0#0'),'#',1)='0',0,(0+split(ifnull(tr_vals,'0#0#0'),'#',2))/(0+split(ifnull(tr_vals,'0#0#0'),'#',1)))
+trad.ord.8.fl.inv=if(fl_traduttore='S',9999-num_nomatch,9999)
+trad.ord.9.fl.inv=if(fl_traduttore='S',9999-num_fuzzy,9999)
+trad.ord.10.fl.inv=if(fl_traduttore='S',9999-num_repeat,9999)
+trad.ord.11.fl.inv=(9999-IFNULL(num_revisione_pa,0))desc
+trad.ord.12.fl.inv=0+if(fl_traduttore='S',9999999-tot_tr,9999999)
+trad.ord.13.fl.inv=0+if(fl_revisore='S',9999999-tot_rv,9999999)
+trad.ord.14.fl.inv=fl_cliente
+trad.ord.15.fl.inv=fl_sett, fl_sett_micro
+trad.ord.16.fl.inv=0+if(ds_tmz='#',99,99-ds_tmz)
+trad.ord.17.fl.inv=(100/(0+split(IFNULL(lista_revisioni,'0#0#0#0#0'),'#',1)+split(IFNULL(lista_revisioni,'0#0#0#0#0'),'#',2)+split(IFNULL(lista_revisioni,'0#0#0#0#0'),'#',3)+split(IFNULL(lista_revisioni,'0#0#0#0#0'),'#',4)+split(IFNULL(lista_revisioni,'0#0#0#0#0'),'#',5))) ASC
+trad.ord.18.fl.inv=(CASE WHEN Split(ds_sw, '@',4) LIKE '%2009%'THEN 1 ELSE 0  END)
+trad.ord.19.fl.inv=(CASE WHEN Split(ds_sw, '@',4) LIKE '%2011%'THEN 1 ELSE 0  END)
+trad.ord.20.fl.inv=(0+substrCount(Split(ds_sw, '@',2),'#')+substrCount(Split(ds_sw, '@',3),'#')+ (CASE WHEN Split(ds_sw, '@',4) LIKE '%2006%'THEN 1 ELSE 0  END))
+trad.ord.21.fl.inv=(CASE WHEN Split(ds_sw, '@',4) LIKE '%2007%'THEN 1 ELSE 0  END)
+trad.ord.22.fl.inv=lavori_aperti
+################ Fornitori
+forn.pag.riba=1710364683
+################ Preventivi
+prev.def_cons=Entro 3 giorni dall'ordine
+prev.pagina.righe=100
+
+prev.base=/usr/skn/getrad/files/preventivi/
+prev.urlBase=http://127.0.0.1:8080/getrad/files/preventivi/
+prev.base_c=/usr/skn/getrad/files/preventivi/clienti/
+prev.urlBase_c=http://127.0.0.1:8080/getrad/files/preventivi/clienti/
+prev.urlBase_s=/getrad/files/preventivi/clienti/
+
+prev.link.quick=http://egetrad.intrawelt.com:8080/getrad/jsp/clienti/area/quotes.jsp
+
+prev.valua0=11726763780292
+prev.valua1=11726763780280
+
+prev.decimali.quantita=2
+prev.decimali.prezzo=4
+prev.decimali.totale=2
+
+prev.ord.incompleti=http://egetrad.intrawelt.com:8080/getrad/jsp/ordini/insupdordine.jsp?id=
+prev.link=http://egetrad.intrawelt.com:8080/getrad/jsp/preventivi/insupdpreventivo.jsp?id=
+
+prev.cli.decimali.quantita=0
+prev.cli.decimali.prezzo=2
+prev.cli.decimali.totale=2
+
+prev.stato.aperto=0
+prev.stato.non.accettato=12266755972348
+prev.stato.da.modificare=12266755972343
+prev.stato.accettato=12266755972334
+
+prev.attivita.tipo.id=12266755973243
+prev.attivita.nome.id=12266755973215
+prev.attivita.esito.prev_richiesto=12266755973203
+prev.attivita.esito.prev_sospeso=12266755973204
+prev.attivita.esito.prev_bocciato=12266755973205
+prev.attivita.esito.prev_accettato=12266755973206
+
+prev.certificazione_default=12266755972332
+
+um.parola=12057683564778
+um.riga=12057683564777
+um.parola_new=17103646838
+um.parola_fuzzy=17103646839
+um.parola_reps=17103646840
+################ Ordini
+ord.def_valuta=11726763780280
+ord.def_simb=&euro;
+# valore per la valutazione massima (=ottimo)
+ord.valutazione.max=5
+# valutazione di default
+ord.valutazione.def=3
+# numero di ordini per pagina
+# se non specificato o zero non viene paginato
+ord.pagina.righe=100
+# stato nuovo ordine
+ord.nuovo=12017040468041
+# stato fatturabile ordine
+ord.fatturabile=12017040468044
+ord.fatturato=12017040468045
+ord.non_fatturabile=91726763780471
+ord.consegnato=91726763780476
+# Automatismo 'Dt Cons Eff' su stato Fatturabile
+ord.cons_eff=S
+# stato fatturabile dettaglio
+dett.in_corso=12057683564430
+dett.fatturabile=12057683564433
+dett.fatturato=12057683564434
+dett.fatturato_forz=12057683564435
+# Codice oltre al quale si hanno "Altri Servizi"
+ord.altri_servizi=200
+# Numero caratteri per riga per le note in fattura
+ord.charNota=65
+# Codice del servizio di revisione traduzione
+ord.serv.rev_trad=15
+# Tipo servizi interpretariato 
+ord.serv.interpretariato.1=102
+ord.serv.interpretariato.2=107
+ord.serv.interpretariato.3=108
+ord.serv.interpretariato.4=109
+# Numero caratteri per riga per le note della contabilità
+ord.charNotaCont=65
+#URL per l'email relativa a un Quick order
+ord.url_ordcli=http://egetrad.intrawelt.com:8080/getrad/jsp/clienti/area/orders.jsp
+#periodo del finemese
+ord.finemese.gg=3
+#URL ordine per interni
+ord.url_wo=http://192.168.20.5:8080/getrad/jsp/ordini/insupdordine.jsp
+ord.mailJobBccToAdmin=S
+
+################ Rate
+#URL dell'xml con i tassi di cambio
+rate.ecbRatesURL=https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml
+rate.hoursToUpdate=12
+riba.rate.id=91726763780480
+
+################ VIPA
+vipa.soc.id=12677764692380
+vipa_aperto=91726763780443
+vipa_in_lavorazione=91726763780444
+vipa_in_consegna=91726763780445
+vipa_in_tribunale=91726763780446
+vipa_prefatt_tr=91726763780447
+vipa_prefatt_eni=91726763780448
+vipa_completo=91726763780451
+vipa.mail_corriere=psconciafurno@intrawelt.com
+vipa.id_resp_interno=843
+vipa.id_trad_timbrobilingue=12682408138950
+vipa.costo_bollo=14.62
+vipa.bolli.limit=22
+vipa.bolli.num_min_alert=35
+############### Provvigioni
+prov.min_date=20110101000000
+
+############### parametri per il multilanguage
+# Numero di lingue nell'array
+language.num_lang=5
+# Massimo numero di lingue gestibili da database
+language.max_lang=10
+# Posizione della lingua di default nell'array language.valid_lang (per convenzione è la 0)
+language.lang_def=0
+#
+language.def.lang=en
+language.def.country=GB
+language.def.variant=
+#
+language.file.lang0=/usr/skn/getrad/WEB-INF/lang/langEN.txt
+language.file.lang1=/usr/skn/getrad/WEB-INF/lang/langIT.txt
+language.file.lang2=/usr/skn/getrad/WEB-INF/lang/langFR.txt
+language.file.lang3=/usr/skn/getrad/WEB-INF/lang/langDE.txt
+language.file.lang4=/usr/skn/getrad/WEB-INF/lang/langES.txt
+
+language.flags.lang0=en
+language.flags.lang1=it
+language.flags.lang2=fr
+language.flags.lang3=de
+language.flags.lang4=es
+#
+language.report.locale.lang0=en_GB
+language.report.locale.lang1=it_IT
+language.report.locale.lang2=en_GB
+language.report.locale.lang3=en_GB
+language.report.locale.lang4=en_GB
+
+# Template --> gli indici stanno nella GlobalDef
+language.template.0.lang0=/usr/skn/getrad/WEB-INF/lang/template/conferma_reg0.html
+language.template.0.lang1=/usr/skn/getrad/WEB-INF/lang/template/conferma_reg1.html
+language.template.0.lang2=/usr/skn/getrad/WEB-INF/lang/template/conferma_reg0.html
+language.template.0.lang3=/usr/skn/getrad/WEB-INF/lang/template/conferma_reg0.html
+language.template.0.lang4=/usr/skn/getrad/WEB-INF/lang/template/conferma_reg0.html
+#
+language.template.1.lang0=/usr/skn/getrad/WEB-INF/lang/template/new_trad0.html
+language.template.1.lang1=/usr/skn/getrad/WEB-INF/lang/template/new_trad1.html
+language.template.1.lang2=/usr/skn/getrad/WEB-INF/lang/template/new_trad0.html
+language.template.1.lang3=/usr/skn/getrad/WEB-INF/lang/template/new_trad0.html
+language.template.1.lang4=/usr/skn/getrad/WEB-INF/lang/template/new_trad0.html
+#
+language.template.2.lang0=/usr/skn/getrad/WEB-INF/lang/template/fine_reg0.html
+language.template.2.lang1=/usr/skn/getrad/WEB-INF/lang/template/fine_reg1.html
+language.template.2.lang2=/usr/skn/getrad/WEB-INF/lang/template/fine_reg0.html
+language.template.2.lang3=/usr/skn/getrad/WEB-INF/lang/template/fine_reg0.html
+language.template.2.lang4=/usr/skn/getrad/WEB-INF/lang/template/fine_reg0.html
+#
+language.template.3.lang0=/usr/skn/getrad/WEB-INF/lang/template/trad_ok0.html
+language.template.3.lang1=/usr/skn/getrad/WEB-INF/lang/template/trad_ok1.html
+language.template.3.lang2=/usr/skn/getrad/WEB-INF/lang/template/trad_ok0.html
+language.template.3.lang3=/usr/skn/getrad/WEB-INF/lang/template/trad_ok0.html
+language.template.3.lang4=/usr/skn/getrad/WEB-INF/lang/template/trad_ok0.html
+#
+language.template.4.lang0=/usr/skn/getrad/WEB-INF/lang/template/trad_ko0.html
+language.template.4.lang1=/usr/skn/getrad/WEB-INF/lang/template/trad_ko1.html
+language.template.4.lang2=/usr/skn/getrad/WEB-INF/lang/template/trad_ko0.html
+language.template.4.lang3=/usr/skn/getrad/WEB-INF/lang/template/trad_ko0.html
+language.template.4.lang4=/usr/skn/getrad/WEB-INF/lang/template/trad_ko0.html
+#
+language.template.5.lang0=/usr/skn/getrad/WEB-INF/lang/template/newpass0.html
+language.template.5.lang1=/usr/skn/getrad/WEB-INF/lang/template/newpass1.html
+language.template.5.lang2=/usr/skn/getrad/WEB-INF/lang/template/newpass0.html
+language.template.5.lang3=/usr/skn/getrad/WEB-INF/lang/template/newpass0.html
+language.template.5.lang4=/usr/skn/getrad/WEB-INF/lang/template/newpass0.html
+#
+language.template.6.lang0=/usr/skn/getrad/WEB-INF/lang/template/fatt_invio_S0.html
+language.template.6.lang1=/usr/skn/getrad/WEB-INF/lang/template/fatt_invio_S1.html
+language.template.6.lang2=/usr/skn/getrad/WEB-INF/lang/template/fatt_invio_S0.html
+language.template.6.lang3=/usr/skn/getrad/WEB-INF/lang/template/fatt_invio_S0.html
+language.template.6.lang4=/usr/skn/getrad/WEB-INF/lang/template/fatt_invio_S0.html
+#
+language.template.7.lang0=/usr/skn/getrad/WEB-INF/lang/template/fatt_invio_C0.html
+language.template.7.lang1=/usr/skn/getrad/WEB-INF/lang/template/fatt_invio_C1.html
+language.template.7.lang2=/usr/skn/getrad/WEB-INF/lang/template/fatt_invio_C0.html
+language.template.7.lang3=/usr/skn/getrad/WEB-INF/lang/template/fatt_invio_C0.html
+language.template.7.lang4=/usr/skn/getrad/WEB-INF/lang/template/fatt_invio_C0.html
+#
+language.template.8.lang0=/usr/skn/getrad/WEB-INF/lang/template/fatt_late0.html
+language.template.8.lang1=/usr/skn/getrad/WEB-INF/lang/template/fatt_late1.html
+language.template.8.lang2=/usr/skn/getrad/WEB-INF/lang/template/fatt_late0.html
+language.template.8.lang3=/usr/skn/getrad/WEB-INF/lang/template/fatt_late0.html
+language.template.8.lang4=/usr/skn/getrad/WEB-INF/lang/template/fatt_late0.html
+#
+language.template.9.lang0=/usr/skn/getrad/WEB-INF/lang/template/fatt_carica_S0.html
+language.template.9.lang1=/usr/skn/getrad/WEB-INF/lang/template/fatt_carica_S1.html
+language.template.9.lang2=/usr/skn/getrad/WEB-INF/lang/template/fatt_carica_S0.html
+language.template.9.lang3=/usr/skn/getrad/WEB-INF/lang/template/fatt_carica_S0.html
+language.template.9.lang4=/usr/skn/getrad/WEB-INF/lang/template/fatt_carica_S0.html
+#
+language.template.10.lang0=/usr/skn/getrad/WEB-INF/lang/template/fatt_carica_c_S0.html
+language.template.10.lang1=/usr/skn/getrad/WEB-INF/lang/template/fatt_carica_c_S1.html
+language.template.10.lang2=/usr/skn/getrad/WEB-INF/lang/template/fatt_carica_c_S0.html
+language.template.10.lang3=/usr/skn/getrad/WEB-INF/lang/template/fatt_carica_c_S0.html
+language.template.10.lang4=/usr/skn/getrad/WEB-INF/lang/template/fatt_carica_c_S0.html
+#
+language.template.11.lang0=/usr/skn/getrad/WEB-INF/lang/template/fatt_carica_C0.html
+language.template.11.lang1=/usr/skn/getrad/WEB-INF/lang/template/fatt_carica_C1.html
+language.template.11.lang2=/usr/skn/getrad/WEB-INF/lang/template/fatt_carica_C0.html
+language.template.11.lang3=/usr/skn/getrad/WEB-INF/lang/template/fatt_carica_C0.html
+language.template.11.lang4=/usr/skn/getrad/WEB-INF/lang/template/fatt_carica_C0.html
+#
+language.template.12.lang0=/usr/skn/getrad/WEB-INF/lang/template/fatt_carica_c_C0.html
+language.template.12.lang1=/usr/skn/getrad/WEB-INF/lang/template/fatt_carica_c_C1.html
+language.template.12.lang2=/usr/skn/getrad/WEB-INF/lang/template/fatt_carica_c_C0.html
+language.template.12.lang3=/usr/skn/getrad/WEB-INF/lang/template/fatt_carica_c_C0.html
+language.template.12.lang4=/usr/skn/getrad/WEB-INF/lang/template/fatt_carica_c_C0.html
+#
+language.template.13.lang0=/usr/skn/getrad/WEB-INF/lang/template/fatt_ok_S0.html
+language.template.13.lang1=/usr/skn/getrad/WEB-INF/lang/template/fatt_ok_S1.html
+language.template.13.lang2=/usr/skn/getrad/WEB-INF/lang/template/fatt_ok_S0.html
+language.template.13.lang3=/usr/skn/getrad/WEB-INF/lang/template/fatt_ok_S0.html
+language.template.13.lang4=/usr/skn/getrad/WEB-INF/lang/template/fatt_ok_S0.html
+#
+language.template.14.lang0=/usr/skn/getrad/WEB-INF/lang/template/fatt_ok_C0.html
+language.template.14.lang1=/usr/skn/getrad/WEB-INF/lang/template/fatt_ok_C1.html
+language.template.14.lang2=/usr/skn/getrad/WEB-INF/lang/template/fatt_ok_C0.html
+language.template.14.lang3=/usr/skn/getrad/WEB-INF/lang/template/fatt_ok_C0.html
+language.template.14.lang4=/usr/skn/getrad/WEB-INF/lang/template/fatt_ok_C0.html
+#
+language.template.15.lang0=/usr/skn/getrad/WEB-INF/lang/template/fatt_ko_S0.html
+language.template.15.lang1=/usr/skn/getrad/WEB-INF/lang/template/fatt_ko_S1.html
+language.template.15.lang2=/usr/skn/getrad/WEB-INF/lang/template/fatt_ko_S0.html
+language.template.15.lang3=/usr/skn/getrad/WEB-INF/lang/template/fatt_ko_S0.html
+language.template.15.lang4=/usr/skn/getrad/WEB-INF/lang/template/fatt_ko_S0.html
+#
+language.template.16.lang0=/usr/skn/getrad/WEB-INF/lang/template/fatt_ko_C0.html
+language.template.16.lang1=/usr/skn/getrad/WEB-INF/lang/template/fatt_ko_C1.html
+language.template.16.lang2=/usr/skn/getrad/WEB-INF/lang/template/fatt_ko_C0.html
+language.template.16.lang3=/usr/skn/getrad/WEB-INF/lang/template/fatt_ko_C0.html
+language.template.16.lang4=/usr/skn/getrad/WEB-INF/lang/template/fatt_ko_C0.html
+#
+language.template.17.lang0=/usr/skn/getrad/WEB-INF/lang/template/pag_T0.html
+language.template.17.lang1=/usr/skn/getrad/WEB-INF/lang/template/pag_T1.html
+language.template.17.lang2=/usr/skn/getrad/WEB-INF/lang/template/pag_T0.html
+language.template.17.lang3=/usr/skn/getrad/WEB-INF/lang/template/pag_T0.html
+language.template.17.lang4=/usr/skn/getrad/WEB-INF/lang/template/pag_T0.html
+#
+language.template.18.lang0=/usr/skn/getrad/WEB-INF/lang/template/pag_P0.html
+language.template.18.lang1=/usr/skn/getrad/WEB-INF/lang/template/pag_P1.html
+language.template.18.lang2=/usr/skn/getrad/WEB-INF/lang/template/pag_P0.html
+language.template.18.lang3=/usr/skn/getrad/WEB-INF/lang/template/pag_P0.html
+language.template.18.lang4=/usr/skn/getrad/WEB-INF/lang/template/pag_P0.html
+#
+language.template.19.lang0=/usr/skn/getrad/WEB-INF/lang/template/trad_complete0.html
+language.template.19.lang1=/usr/skn/getrad/WEB-INF/lang/template/trad_complete1.html
+language.template.19.lang2=/usr/skn/getrad/WEB-INF/lang/template/trad_complete0.html
+language.template.19.lang3=/usr/skn/getrad/WEB-INF/lang/template/trad_complete0.html
+language.template.19.lang4=/usr/skn/getrad/WEB-INF/lang/template/trad_complete0.html
+#
+language.template.20.lang0=/usr/skn/getrad/WEB-INF/lang/template/trad_complete_pm0.html
+language.template.20.lang1=/usr/skn/getrad/WEB-INF/lang/template/trad_complete_pm1.html
+language.template.20.lang2=/usr/skn/getrad/WEB-INF/lang/template/trad_complete_pm0.html
+language.template.20.lang3=/usr/skn/getrad/WEB-INF/lang/template/trad_complete_pm0.html
+language.template.20.lang4=/usr/skn/getrad/WEB-INF/lang/template/trad_complete_pm0.html
+#
+language.template.21.lang0=/usr/skn/getrad/WEB-INF/lang/template/banca_mod0.html
+language.template.21.lang1=/usr/skn/getrad/WEB-INF/lang/template/banca_mod1.html
+language.template.21.lang2=/usr/skn/getrad/WEB-INF/lang/template/banca_mod0.html
+language.template.21.lang3=/usr/skn/getrad/WEB-INF/lang/template/banca_mod0.html
+language.template.21.lang4=/usr/skn/getrad/WEB-INF/lang/template/banca_mod0.html
+#
+language.template.22.lang0=/usr/skn/getrad/WEB-INF/lang/template/c_fatt_invio_0.html
+language.template.22.lang1=/usr/skn/getrad/WEB-INF/lang/template/c_fatt_invio_1.html
+language.template.22.lang2=/usr/skn/getrad/WEB-INF/lang/template/c_fatt_invio_0.html
+language.template.22.lang3=/usr/skn/getrad/WEB-INF/lang/template/c_fatt_invio_3.html
+language.template.22.lang4=/usr/skn/getrad/WEB-INF/lang/template/c_fatt_invio_0.html
+#
+language.template.23.lang0=/usr/skn/getrad/WEB-INF/lang/template/c_fatt_soll_0.html
+language.template.23.lang1=/usr/skn/getrad/WEB-INF/lang/template/c_fatt_soll_1.html
+language.template.23.lang2=/usr/skn/getrad/WEB-INF/lang/template/c_fatt_soll_0.html
+language.template.23.lang3=/usr/skn/getrad/WEB-INF/lang/template/c_fatt_soll_0.html
+language.template.23.lang4=/usr/skn/getrad/WEB-INF/lang/template/c_fatt_soll_0.html
+#
+language.template.24.lang0=/usr/skn/getrad/WEB-INF/lang/template/pag_esita0.html
+language.template.24.lang1=/usr/skn/getrad/WEB-INF/lang/template/pag_esita1.html
+language.template.24.lang2=/usr/skn/getrad/WEB-INF/lang/template/pag_esita0.html
+language.template.24.lang3=/usr/skn/getrad/WEB-INF/lang/template/pag_esita0.html
+language.template.24.lang4=/usr/skn/getrad/WEB-INF/lang/template/pag_esita0.html
+#
+language.template.25.lang0=/usr/skn/getrad/WEB-INF/lang/template/pag_proroga0.html
+language.template.25.lang1=/usr/skn/getrad/WEB-INF/lang/template/pag_proroga1.html
+language.template.25.lang2=/usr/skn/getrad/WEB-INF/lang/template/pag_proroga0.html
+language.template.25.lang3=/usr/skn/getrad/WEB-INF/lang/template/pag_proroga0.html
+language.template.25.lang4=/usr/skn/getrad/WEB-INF/lang/template/pag_proroga0.html
+#
+language.template.26.lang0=/usr/skn/getrad/WEB-INF/lang/template/pag_soll0.html
+language.template.26.lang1=/usr/skn/getrad/WEB-INF/lang/template/pag_soll1.html
+language.template.26.lang2=/usr/skn/getrad/WEB-INF/lang/template/pag_soll0.html
+language.template.26.lang3=/usr/skn/getrad/WEB-INF/lang/template/pag_soll0.html
+language.template.26.lang4=/usr/skn/getrad/WEB-INF/lang/template/pag_soll0.html
+#
+language.template.27.lang0=/usr/skn/getrad/WEB-INF/lang/template/fatt_invio_S0.html
+language.template.27.lang1=/usr/skn/getrad/WEB-INF/lang/template/fatt_invio_S1.html
+language.template.27.lang2=/usr/skn/getrad/WEB-INF/lang/template/fatt_invio_S0.html
+language.template.27.lang3=/usr/skn/getrad/WEB-INF/lang/template/fatt_invio_S0.html
+language.template.27.lang4=/usr/skn/getrad/WEB-INF/lang/template/fatt_invio_S0.html
+#
+language.template.28.lang0=/usr/skn/getrad/WEB-INF/lang/template/fatt_invio_C0.html
+language.template.28.lang1=/usr/skn/getrad/WEB-INF/lang/template/fatt_invio_C1.html
+language.template.28.lang2=/usr/skn/getrad/WEB-INF/lang/template/fatt_invio_C0.html
+language.template.28.lang3=/usr/skn/getrad/WEB-INF/lang/template/fatt_invio_C0.html
+language.template.28.lang4=/usr/skn/getrad/WEB-INF/lang/template/fatt_invio_C0.html
+#
+language.template.29.lang0=/usr/skn/getrad/WEB-INF/lang/template/fatt_soglia_0.html
+language.template.29.lang1=/usr/skn/getrad/WEB-INF/lang/template/fatt_soglia_1.html
+language.template.29.lang2=/usr/skn/getrad/WEB-INF/lang/template/fatt_soglia_0.html
+language.template.29.lang3=/usr/skn/getrad/WEB-INF/lang/template/fatt_soglia_0.html
+language.template.29.lang4=/usr/skn/getrad/WEB-INF/lang/template/fatt_soglia_0.html
+#
+language.template.30.lang0=/usr/skn/getrad/WEB-INF/lang/template/web_prev0.html
+language.template.30.lang1=/usr/skn/getrad/WEB-INF/lang/template/web_prev1.html
+language.template.30.lang2=/usr/skn/getrad/WEB-INF/lang/template/web_prev0.html
+language.template.30.lang3=/usr/skn/getrad/WEB-INF/lang/template/web_prev0.html
+language.template.30.lang4=/usr/skn/getrad/WEB-INF/lang/template/web_prev0.html
+#
+language.template.31.lang0=/usr/skn/getrad/WEB-INF/lang/template/web_cont0.html
+language.template.31.lang1=/usr/skn/getrad/WEB-INF/lang/template/web_cont1.html
+language.template.31.lang2=/usr/skn/getrad/WEB-INF/lang/template/web_cont0.html
+language.template.31.lang3=/usr/skn/getrad/WEB-INF/lang/template/web_cont0.html
+language.template.31.lang4=/usr/skn/getrad/WEB-INF/lang/template/web_cont0.html
+#
+language.template.32.lang0=/usr/skn/getrad/WEB-INF/lang/template/prev0.html
+language.template.32.lang1=/usr/skn/getrad/WEB-INF/lang/template/prev1.html
+language.template.32.lang2=/usr/skn/getrad/WEB-INF/lang/template/prev0.html
+language.template.32.lang3=/usr/skn/getrad/WEB-INF/lang/template/prev0.html
+language.template.32.lang4=/usr/skn/getrad/WEB-INF/lang/template/prev0.html
+#
+language.template.33.lang0=/usr/skn/getrad/WEB-INF/lang/template/ord_inc0.html
+language.template.33.lang1=/usr/skn/getrad/WEB-INF/lang/template/ord_inc1.html
+language.template.33.lang2=/usr/skn/getrad/WEB-INF/lang/template/ord_inc0.html
+language.template.33.lang3=/usr/skn/getrad/WEB-INF/lang/template/ord_inc0.html
+language.template.33.lang4=/usr/skn/getrad/WEB-INF/lang/template/ord_inc0.html
+#
+language.template.34.lang0=/usr/skn/getrad/WEB-INF/lang/template/ord_new_pre0.html
+language.template.34.lang1=/usr/skn/getrad/WEB-INF/lang/template/ord_new_pre1.html
+language.template.34.lang2=/usr/skn/getrad/WEB-INF/lang/template/ord_new_pre0.html
+language.template.34.lang3=/usr/skn/getrad/WEB-INF/lang/template/ord_new_pre0.html
+language.template.34.lang4=/usr/skn/getrad/WEB-INF/lang/template/ord_new_pre0.html
+#
+language.template.35.lang0=/usr/skn/getrad/WEB-INF/lang/template/reclamo_nuovo0.html
+language.template.35.lang1=/usr/skn/getrad/WEB-INF/lang/template/reclamo_nuovo1.html
+language.template.35.lang2=/usr/skn/getrad/WEB-INF/lang/template/reclamo_nuovo0.html
+language.template.35.lang3=/usr/skn/getrad/WEB-INF/lang/template/reclamo_nuovo0.html
+language.template.35.lang4=/usr/skn/getrad/WEB-INF/lang/template/reclamo_nuovo0.html
+#
+language.template.36.lang0=/usr/skn/getrad/WEB-INF/lang/template/reclamo_chiuso0.html
+language.template.36.lang1=/usr/skn/getrad/WEB-INF/lang/template/reclamo_chiuso1.html
+language.template.36.lang2=/usr/skn/getrad/WEB-INF/lang/template/reclamo_chiuso0.html
+language.template.36.lang3=/usr/skn/getrad/WEB-INF/lang/template/reclamo_chiuso0.html
+language.template.36.lang4=/usr/skn/getrad/WEB-INF/lang/template/reclamo_chiuso0.html
+#
+language.template.37.lang0=/usr/skn/getrad/WEB-INF/lang/template/prev_1_0.html
+language.template.37.lang1=/usr/skn/getrad/WEB-INF/lang/template/prev_1_1.html
+language.template.37.lang2=/usr/skn/getrad/WEB-INF/lang/template/prev_1_0.html
+language.template.37.lang3=/usr/skn/getrad/WEB-INF/lang/template/prev_1_0.html
+language.template.37.lang4=/usr/skn/getrad/WEB-INF/lang/template/prev_1_0.html
+#
+language.template.38.lang0=/usr/skn/getrad/WEB-INF/lang/template/generico0.html
+language.template.38.lang1=/usr/skn/getrad/WEB-INF/lang/template/generico1.html
+language.template.38.lang2=/usr/skn/getrad/WEB-INF/lang/template/generico0.html
+language.template.38.lang3=/usr/skn/getrad/WEB-INF/lang/template/generico0.html
+language.template.38.lang4=/usr/skn/getrad/WEB-INF/lang/template/generico0.html
+#
+language.template.39.lang0=/usr/skn/getrad/WEB-INF/lang/template/lead_richiesta_send0.html
+language.template.39.lang1=/usr/skn/getrad/WEB-INF/lang/template/lead_richiesta_send1.html
+language.template.39.lang2=/usr/skn/getrad/WEB-INF/lang/template/lead_richiesta_send0.html
+language.template.39.lang3=/usr/skn/getrad/WEB-INF/lang/template/lead_richiesta_send0.html
+language.template.39.lang4=/usr/skn/getrad/WEB-INF/lang/template/lead_richiesta_send0.html
+#
+language.template.40.lang0=/usr/skn/getrad/WEB-INF/lang/template/lead_richiesta_ok0.html
+language.template.40.lang1=/usr/skn/getrad/WEB-INF/lang/template/lead_richiesta_ok1.html
+language.template.40.lang2=/usr/skn/getrad/WEB-INF/lang/template/lead_richiesta_ok0.html
+language.template.40.lang3=/usr/skn/getrad/WEB-INF/lang/template/lead_richiesta_ok0.html
+language.template.40.lang4=/usr/skn/getrad/WEB-INF/lang/template/lead_richiesta_ok0.html
+#
+language.template.41.lang0=/usr/skn/getrad/WEB-INF/lang/template/lead_richiesta_ko0.html
+language.template.41.lang1=/usr/skn/getrad/WEB-INF/lang/template/lead_richiesta_ko1.html
+language.template.41.lang2=/usr/skn/getrad/WEB-INF/lang/template/lead_richiesta_ko0.html
+language.template.41.lang3=/usr/skn/getrad/WEB-INF/lang/template/lead_richiesta_ko0.html
+language.template.41.lang4=/usr/skn/getrad/WEB-INF/lang/template/lead_richiesta_ko0.html
+#
+language.template.43.lang0=/usr/skn/getrad/WEB-INF/lang/template/trad_pulizia0.html
+language.template.43.lang1=/usr/skn/getrad/WEB-INF/lang/template/trad_pulizia1.html
+language.template.43.lang2=/usr/skn/getrad/WEB-INF/lang/template/trad_pulizia0.html
+language.template.43.lang3=/usr/skn/getrad/WEB-INF/lang/template/trad_pulizia0.html
+language.template.43.lang4=/usr/skn/getrad/WEB-INF/lang/template/trad_pulizia0.html
+#
+language.template.44.lang0=/usr/skn/getrad/WEB-INF/lang/template/newpassreq0.html
+language.template.44.lang1=/usr/skn/getrad/WEB-INF/lang/template/newpassreq1.html
+language.template.44.lang2=/usr/skn/getrad/WEB-INF/lang/template/newpassreq0.html
+language.template.44.lang3=/usr/skn/getrad/WEB-INF/lang/template/newpassreq0.html
+language.template.44.lang4=/usr/skn/getrad/WEB-INF/lang/template/newpassreq0.html
+#
+language.template.45.lang0=/usr/skn/getrad/WEB-INF/lang/template/pag_Q0.html
+language.template.45.lang1=/usr/skn/getrad/WEB-INF/lang/template/pag_Q1.html
+language.template.45.lang2=/usr/skn/getrad/WEB-INF/lang/template/pag_Q0.html
+language.template.45.lang3=/usr/skn/getrad/WEB-INF/lang/template/pag_Q0.html
+language.template.45.lang4=/usr/skn/getrad/WEB-INF/lang/template/pag_Q0.html
+#
+language.template.46.lang0=/usr/skn/getrad/WEB-INF/lang/template/trad_pulizia_avviso0.html
+language.template.46.lang1=/usr/skn/getrad/WEB-INF/lang/template/trad_pulizia_avviso1.html
+language.template.46.lang2=/usr/skn/getrad/WEB-INF/lang/template/trad_pulizia_avviso0.html
+language.template.46.lang3=/usr/skn/getrad/WEB-INF/lang/template/trad_pulizia_avviso0.html
+language.template.46.lang4=/usr/skn/getrad/WEB-INF/lang/template/trad_pulizia_avviso0.html
+#
+language.template.47.lang0=/usr/skn/getrad/WEB-INF/lang/template/fatt_ok_dich_S0.html
+language.template.47.lang1=/usr/skn/getrad/WEB-INF/lang/template/fatt_ok_dich_S1.html
+language.template.47.lang2=/usr/skn/getrad/WEB-INF/lang/template/fatt_ok_dich_S0.html
+language.template.47.lang3=/usr/skn/getrad/WEB-INF/lang/template/fatt_ok_dich_S0.html
+language.template.47.lang4=/usr/skn/getrad/WEB-INF/lang/template/fatt_ok_dich_S0.html
+#
+language.template.48.lang0=/usr/skn/getrad/WEB-INF/lang/template/fatt_ok_dich_C0.html
+language.template.48.lang1=/usr/skn/getrad/WEB-INF/lang/template/fatt_ok_dich_C1.html
+language.template.48.lang2=/usr/skn/getrad/WEB-INF/lang/template/fatt_ok_dich_C0.html
+language.template.48.lang3=/usr/skn/getrad/WEB-INF/lang/template/fatt_ok_dich_C0.html
+language.template.48.lang4=/usr/skn/getrad/WEB-INF/lang/template/fatt_ok_dich_C0.html
+#
+language.template.49.lang0=/usr/skn/getrad/WEB-INF/lang/template/trad_prova_ok0.html
+language.template.49.lang1=/usr/skn/getrad/WEB-INF/lang/template/trad_prova_ok1.html
+language.template.49.lang2=/usr/skn/getrad/WEB-INF/lang/template/trad_prova_ok0.html
+language.template.49.lang3=/usr/skn/getrad/WEB-INF/lang/template/trad_prova_ok0.html
+language.template.49.lang4=/usr/skn/getrad/WEB-INF/lang/template/trad_prova_ok0.html
+#
+language.template.50.lang0=/usr/skn/getrad/WEB-INF/lang/template/trad_disattivato0.html
+language.template.50.lang1=/usr/skn/getrad/WEB-INF/lang/template/trad_disattivato1.html
+language.template.50.lang2=/usr/skn/getrad/WEB-INF/lang/template/trad_disattivato0.html
+language.template.50.lang3=/usr/skn/getrad/WEB-INF/lang/template/trad_disattivato0.html
+language.template.50.lang4=/usr/skn/getrad/WEB-INF/lang/template/trad_disattivato0.html
+############### Parametri invio mail
+mail.host=smtp.office365.com
+mail.mailer=Intrawelt Mailer
+##porta SMTP e protocollo di autenticazione usato dal SMTP server
+mail.port=587
+mail.security=TLS
+# Invio mail con successo
+mail.ret=Mail inviata correttamente.
+# Autenticazione richiesta dal mail host (1=Si,0=No)
+mail.autentication=1
+# Parametri per l'autenticazione
+mail.user=egetrad@intrawelt.com
+mail.password=__SET_ME__
+# Invio attraverso proxy
+mail.proxy=
+mail.pport=
+# Soggetto di default
+mail.subject=Richiesta Informazioni
+mail.from=egetrad@intrawelt.com
+mail.preventivi.bcc=preventivi@intrawelt.com
+mail.batch.bcc=egetrad@intrawelt.com
+mail.bcc.cambiopw=egetrad@intrawelt.com
+mail.trad.pm.from.options=egetrad@intrawelt.com;info@intrawelt.com;bandi@intrawelt.com
+mail.versamenti=versamenti@intrawelt.com
+mail.recruitment=recruitment@intrawelt.com
+mail.accounts=accounts@intrawelt.com
+
+############### Parametri Home Page PM
+# default per il filtro job T,R,A
+pm.f_job.def=111
+# default per l'ordinamento
+pm.sort.def=12017040468046
+pm.sort.def_gr=PRJ
+pm.sort.def_ord=order by 0+cd_cliente, ds_lingua_da, ds_lingua_a, id_incarico_tr
+
+############### Parametri Dashboard Trad
+# default per il filtro job T,R,A
+trad.f_job.def=111
+# default per l'ordinamento
+trad.sort.def=12017040468049
+trad.sort.def_gr=PRJ
+trad.sort.def_ord=order by right(id_incarico_tr,2) DESC, (0+id_incarico_tr) DESC
+
+################ Contabilita'
+# scadenza fattura traduttore in giorni
+cont.scadenza_tr=60
+cont.scadenza_tr.gg_mese=13
+cont.carica_fatt=http://egetrad.intrawelt.com:8080/getrad/CaricaFatt?s=
+# 1024KB
+cont.upload.MaxRequestSize=1048576
+cont.upload.RepositoryPath=/usr/skn/getrad/files/fatture/traduttori/
+# Url fatture
+cont.urlBase=http://egetrad.intrawelt.com:8080/getrad/files/fatture/traduttori/
+cont.urlBase_int=http://127.0.0.1:8080/getrad/files/fatture/traduttori/
+cont.urlFatt=http://egetrad.intrawelt.com:8080/getrad/jsp/fatture/index.jsp
+cont.pathFatt=/files/fatture/traduttori/
+# numero giorni per invio sollecito (lavorativi)
+cont.scostamento=3
+# numero giorni per invio notifica (lavorativi)
+cont.scostamento_cl=3
+# Limite in euro per la creazione fattura
+cont.soglia=40
+# job invio solleciti Tr
+cont.job_tr.enabled=S
+# job invio notifiche Cl
+cont.job_cl.enabled=S
+# job controllo ordini preventivi
+cont.job_ord.enabled=S
+# occhio che sia di mattina, perché se è PM può avere problemi
+cont.job.ora_inizio=0100
+# limite inferiore per accorpamento job
+cont.job.limite=20100101
+# ultima fattura emessa da utilizzare solo allo startup quando il db è ovviamente vuoto..
+cont.last.numero=2008001880
+cont.last.data=20081127
+# Cartella fatture clienti
+cont.base_fatt_c=/usr/skn/getrad/files/fatture/clienti/
+cont.urlBase_int_c=http://127.0.0.1:8080/getrad/files/fatture/clienti/
+# Profilo iva per le spese (esenti art 15)
+cont.spese=5
+# Profilo iva per le spese dei clienti comunitari (esenti art 7 ter)
+cont.spese_comunitario=8
+# Email per comunicazioni banca
+cont.banca.email=marco.vitellozzi@bper.it
+# primo limite per il ritardo pagamento
+cont.insoluto.1=3
+# secondo limite per invio email
+cont.insoluto.2=6
+# terzo limite per la proroga
+cont.insoluto.3=15
+# limite in giorni per la modifica di una disposizione ridi
+cont.max.ridi.days=3
+# giorno oltre il quale le fatture non emesse del mese precedente compaiono nel mese corrente (e spariscono dal mese scorso)
+cont.giorno.scatto.fatture=16
+# percorso foglio di stile per fatturePA
+cont.fatturaPA.xsl=/usr/skn/getrad/WEB-INF/xsl/fatturapa_v1.2.1.xsl
+# id dei servizi da far uscire nella lista asseverazioni/certificazioni sulla HomePM
+cont.listaServiziHomePm = 16,14060214906705,19,14232324440980,14060214906702,14060215006160,14060214906703,14060214906707,14060214906708
+
+################ Reportistica
+# indica se la proc di allineamento è abilitata
+rep.allinea=N
+rep.allinea.script=sh /usr/skn/getrad/WEB-INF/script/allinea.sh
+
+################ Allegati
+# numero input vuoti
+allega.num_file=3
+# settings per tipo
+allega.1.repo=/usr/skn/getrad/files/ordini/
+allega.1.url=/getrad/files/ordini/
+#
+allega.2.repo=/usr/skn/getrad/files/web/
+allega.2.url=/getrad/files/web/
+#
+allega.3.repo=/usr/skn/getrad/files/reclami/
+allega.3.url=/getrad/files/reclami/
+#
+allega.4.repo=/usr/skn/getrad/files/preventivi/allegati/
+allega.4.url=/getrad/files/preventivi/allegati/
+#
+allega.5.repo=/usr/skn/getrad/files/ordini_cli/
+allega.5.url=/getrad/files/ordini_cli/
+#
+allega.6.repo=/usr/skn/getrad/files/vipa/allegati/
+allega.6.url=/getrad/files/vipa/allegati/
+#
+allega.7.repo=/usr/skn/getrad/files/lead/email_schedulate/
+allega.7.url=/getrad/files/lead/email_schedulate/
+#
+allega.8.repo=/usr/skn/getrad/files/fatture/clienti/allegati_fatture/
+allega.8.url=/getrad/files/fatture/clienti/allegati_fatture/
+#
+#
+############### Tipo allegati (per differenziare gli allegati)
+allegato_tipo_prev=11726763780100
+allegato_tipo_ordine=11726763780101
+
+# estensioni file (corrispondono alle icone nella cartella images/file)
+# ordinate alfabeticamente (usare update/file_ext.jsp) e senza punto
+allega.formati=accdb,ai,aiff,bz2,c,chm,conf,cpp,css,csv,deb,divx,doc,docx,dot,eml,file,gif,gz,hlp,htm,html,iso,jpeg,jpg,js,lit,mdb,mht,mm,mov,mp3,mpg,odc,odf,odg,odi,odp,ods,odt,ogg,pdf,pgp,php,pl,png,pps,ppt,pptx,ps,py,ram,rar,rb,rm,rpm,rtf,sql,swf,sxc,sxd,sxi,sxw,tar,tex,tgz,txt,vcf,wav,wma,wmv,xls,xlsx,xml,xpi,xvid,zip
+allega.unknown=file.png
+
+################ Preventivi/Contatti online
+web.base_url=http://www.intrawelt.com
+# 10MB
+web.upload.MaxRequestSize=10485760
+web.to=info@intrawelt.com
+web.txt.len=60
+
+######Glossario
+glossario.url=http://gs.intrawelt.com:8080/multiterm/
+groupshare.url=http://gs.intrawelt.com/
+
+################ Lead
+lead.dash.news.giorni.inizio=0
+lead.dash.news.giorni.fine=150
+# millisecondi di refresh per le novità
+lead.novita.interval=900000
+
+############ Email schedulate
+lead.email.schedulate.giorni.enabled=S
+lead.email.schedulate.giorni=180
+lead.email.schedulate.sleep=86400000
+lead.email.schedulate.attivita.tipo=12266755973210
+lead.email.schedulate.attivita.att=12266755973254
+lead.email.schedulate.attivita.esito=12266755973193
+
+lead.nuovo.mail.a=apotalivo@intrawelt.com
+lead.nuovo.mail.da=egetrad@intrawelt.com
+lead.nuovo.richiesta.cliente=http://192.168.20.5:8080/getrad/jsp/clienti/insupdcliente.jsp?id=
+lead.nuovo.richiesta.associa=http://192.168.20.5:8080/getrad/AssociaAziendaCommercialeServlet?mode=
+lead.nuovo.richiesta.nega=http://192.168.20.5:8080/getrad/AssociaAziendaCommercialeServlet?mode=
+
+lead.esito.cliente=12266755973207
+lead.dash.saveState=saveDashState
+
+## Thread per liberare i prospect inutilizzati
+lead.liberaProspect.thread=S
+# occhio che sia di mattina, perché se è PM può avere problemi
+lead.liberaProspect.ora_inizio=0130
+lead.liberaProspect.LastActivityLimit=3
+lead.liberaProspect.NumberLimit=10
+
+##distanza normalizzata di Levenshtein oltre la quale scatta una verifica
+lead.percent.levenshtein=80
+
+## JASPER SERVER
+jasper.username=gtruser
+jasper.password=gtruser
+jasper.baseurl=http://192.168.20.111:8080/jasperserver/flow.html?_flowId=viewReportFlow&reportUnit=
+jasper.report.common.base=/usr/skn/getrad/files/jasper/
+jasper.db=prod
+jasper.servlet.base=http://127.0.0.1:8080
+jasper.padding.wo=6
+jasper.padding.job=8
+jasper.days.b4.delete=2
+
+jasper.report.sofferenze=/prod/fatture/clienti/sofferenze
+jasper.report.fatt_emesse_cli=/prod/fatture/clienti/riepilogo_fatture
+jasper.report.reclamo=/prod/reclami/reclamo
+jasper.report.consegne_vipa=/prod/VIPA/consegne_da_a
+
+jasper.report.vipa_fatturati_by_trad=/prod/VIPA/vipa_fatturati_by_trad
+jasper.report.vipa_fatturati_elenco_assev_legal=/prod/VIPA/vipa_fatturati_elenco_assev_legal
+jasper.report.ridi=/prod/pagamenti/ridi
+jasper.report.riba=/prod/pagamenti/riba
+jasper.report.riepilogo=/prod/pagamenti/riepilogo
+
+jasper.report.provvigione=/prod/provvigioni/provvigione
+jasper.report.estratto_conto_trad=/prod/riepiloghi/ec_tr
+jasper.report.estratto_conto_cli=/prod/riepiloghi/ec_cl
+jasper.report.estratto_conto_cli_byfatt=/prod/riepiloghi/ec_cl_byfatt
+
+jasper.report.preventivo=/prod/preventivi/preventivo
+jasper.report.fattura=/prod/fatture/clienti/fattura
+jasper.report.incarico=/prod/traduttori/incarico
+jasper.report.fatt_tr_cont=/prod/fatture/traduttori/dati_contabili_tr
+jasper.report.ec_economico=/prod/riepiloghi/ec_cl_economico
+jasper.report.sommario_x_banca=/prod/pagamenti/sommario_x_banca
+
+## Google Recaptcha
+google.recaptcha.site.key=6LfSUXUUAAAAAGfHtW8PFhLaKSiGwHmxNDG6cdZN
+google.recaptcha.secret.key=6LfSUXUUAAAAAL2wa8bpgRbVbgczRd0XdvOT8M2D
+
+##REDIRECT VERSO NUOVO SITO
+redirect.url.form_contatto_enabled=S
+redirect.url.form_contatto0=https://intrawelt.com/en/contact/
+redirect.url.form_contatto1=https://intrawelt.com/it/contattaci/
+redirect.url.form_contatto3=https://intrawelt.com/de/kontakt/
