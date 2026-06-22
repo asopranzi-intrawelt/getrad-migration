@@ -234,3 +234,23 @@ il codice. Commit e push restano manuali dell'utente.
 Alternativa scartata: codice in git con worktree o branch per ambiente. Adatta a progetti con
 sorgente proprio e artefatti leggeri, non a questo caso legacy senza sorgente e con dati pesanti e
 segreti.
+
+## ADR-013 - Hardening applicato per livello: web.xml dell'app contro config del server
+
+Data: 2026-06-19
+Stato: accettata
+Contesto: la Fase 7 prevede hardening da fare su test e poi promuovere. Gli interventi cadono su
+livelli diversi dello stack, con percorsi di promozione diversi, e va deciso dove mettere ciascuno.
+Decisione: gli header di sicurezza HTTP si aggiungono nel `web.xml` dell'applicazione, con il
+filtro nativo Tomcat `HttpHeaderSecurityFilter`. Il mascheramento della versione Tomcat nelle
+pagine di errore si fa con un `ErrorReportValve` nel `server.xml`, montato in sola lettura nel solo
+container di test.
+Motivazione: il `web.xml` vive nell'albero dell'app bind-montato, quindi una modifica e' isolata al
+test e si promuove in produzione con lo stesso rsync usato per i JSP, restando coerente con il
+modello test verso produzione. Il `server.xml` e' invece configurazione del server, fuori
+dall'albero dell'app: per isolarlo al test si monta una copia modificata solo sul compose di test.
+Conseguenza: la promozione e' asimmetrica. Il `web.xml` con gli header arriva in produzione con la
+prossima sincronizzazione dell'albero (sta in `WEB-INF/`, va incluso nella rsync di promozione,
+non solo `jsp/`). Il `server.xml` invece non si promuove via rsync: in produzione va montato lo
+stesso file o cotta la modifica nel Dockerfile, come passo dedicato. Per il debito MD5, non
+risolvibile senza sorgente, il controllo compensativo resta l'allowlist di rete della Fase 6.

@@ -280,21 +280,21 @@ Complementare al wipe c'e' la sessione incognito: invece di pulire dopo, si evit
 
 ---
 
-[^1]: *Skill* — workflow richiamabile descritto in un file `SKILL.md`, che incapsula istruzioni
+[^1]: *Skill* - workflow richiamabile descritto in un file `SKILL.md`, che incapsula istruzioni
 operative e comandi pre-eseguiti il cui output viene iniettato nel contesto.
-[^2]: *MCP*, Model Context Protocol — protocollo per collegare a Claude server esterni che
+[^2]: *MCP*, Model Context Protocol - protocollo per collegare a Claude server esterni che
 espongono strumenti e dati; configurato in `.mcp.json`.
-[^3]: *Drift* — divergenza accumulata tra ciò che un documento descrive e lo stato attuale del
+[^3]: *Drift* - divergenza accumulata tra ciò che un documento descrive e lo stato attuale del
 codice.
-[^4]: *YAML*, YAML Ain't Markup Language — formato di serializzazione leggibile usato qui per il
+[^4]: *YAML*, YAML Ain't Markup Language - formato di serializzazione leggibile usato qui per il
 blocco di metadati in testa ai documenti.
-[^5]: *Glob* — sintassi di pattern per percorsi di file, dove ad esempio `**` indica una
+[^5]: *Glob* - sintassi di pattern per percorsi di file, dove ad esempio `**` indica una
 qualsiasi profondità di sottocartelle.
-[^6]: *TBC*, to be confirmed — marcatore che segnala un punto del documento ancora da confermare.
-[^7]: *SMTP*, Simple Mail Transfer Protocol — protocollo di invio della posta; le sue credenziali
+[^6]: *TBC*, to be confirmed - marcatore che segnala un punto del documento ancora da confermare.
+[^7]: *SMTP*, Simple Mail Transfer Protocol - protocollo di invio della posta; le sue credenziali
 sono un segreto da non committare.
-[^8]: *MMD*, estensione dei file Mermaid — sorgente testuale da cui si genera un diagramma.
-[^9]: *ADR*, Architecture Decision Record — voce numerata che registra una singola decisione
+[^8]: *MMD*, estensione dei file Mermaid - sorgente testuale da cui si genera un diagramma.
+[^9]: *ADR*, Architecture Decision Record - voce numerata che registra una singola decisione
 architetturale; nella forma *lite* tiene solo contesto, decisione, motivazione e conseguenze.
-[^10]: *POSIX*, Portable Operating System Interface — famiglia di standard che definisce
+[^10]: *POSIX*, Portable Operating System Interface - famiglia di standard che definisce
 l'interfaccia delle shell e degli strumenti di tipo Unix; uno script POSIX gira su Linux e macOS.

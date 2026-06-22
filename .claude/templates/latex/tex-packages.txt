@@ -1,4 +1,4 @@
-# Manifesto dei pacchetti LaTeX (template) — sezione 13 di PROJECT-SYSTEM.md.
+# Manifesto dei pacchetti LaTeX (template) - sezione 13 di PROJECT-SYSTEM.md.
 # Istanziare in radice come tex-packages.txt e ADATTARE al preambolo reale del proprio .tex:
 # una voce per riga col nome del pacchetto tlmgr; righe vuote e con # ignorate. tlmgr risolve
 # da solo le dipendenze, quindi elencare solo i pacchetti di primo livello.

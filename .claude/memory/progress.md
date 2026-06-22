@@ -2,6 +2,60 @@
 
 > Append-only, in ordine cronologico inverso (la voce più recente in alto).
 
+## 2026-06-19 - Promozione hardening in produzione (header di sicurezza e mascheramento versione)
+
+Commit: fuori repo (produzione su VM810) + schede `.claude/`
+File toccati: `/srv/getrad-stack/extracted/getrad/WEB-INF/web.xml`, `/srv/getrad-stack/conf/server.xml`
+(nuovo), `/srv/getrad-stack/docker-compose.yml`, `backups/`, schede `.claude/`
+Motivo: dopo la verifica completa su test (lato server e a video), promozione in produzione degli
+interventi di hardening.
+
+Esecuzione: backup di `web.xml` e del compose di produzione in `backups/` con tag
+`prod-pre-hardening-2026-06-19`. Diff confermato che il `web.xml` di test aggiunge solo il blocco
+filtro. Promozione `web.xml` con cp da test a prod e owner uniforme intrawelt. Per il mascheramento
+versione, copiato il `server.xml` indurito in `/srv/getrad-stack/conf/server.xml` e aggiunto il
+relativo bind-mount in sola lettura al compose di produzione (prima modifica al compose di prod,
+backuppato). Ricreato il container app di produzione.
+
+Verifica su produzione: app healthy; header `X-Frame-Options: SAMEORIGIN` e `X-Content-Type-Options:
+nosniff` presenti su 8080 e anche attraverso il proxy sulla porta 80; versione Tomcat mascherata
+nella 404; login 200 su 8080 e via nome amichevole. Hardening di base ora allineato tra test e
+produzione. Restano opzionali, da decidere se necessari: HTTPS sulla LAN e `showReport=false`.
+
+## 2026-06-19 - Hardening su test: header di sicurezza e mascheramento versione Tomcat
+
+Commit: fuori repo (albero test e conf test su VM810) + schede `.claude/`
+File toccati: `/srv/getrad-stack/test/extracted/getrad/WEB-INF/web.xml`,
+`/srv/getrad-stack/test/conf/server.xml` (nuovo), `/srv/getrad-stack/test/docker-compose.yml`,
+schede `.claude/`
+Motivo: avvio della Fase 7 sugli interventi fattibili senza sorgente, su test come da indicazione.
+
+Header di sicurezza: aggiunto al `web.xml` dell'app il filtro nativo Tomcat
+`HttpHeaderSecurityFilter`, posizionato prima dei servlet per rispettare la DTD 2.3. Produce
+`X-Frame-Options: SAMEORIGIN` (l'app usa frame propri, no DENY) e `X-Content-Type-Options: nosniff`.
+HSTS disabilitato perche' non c'e' HTTPS. Verificato su 8090: header presenti, login 200, app
+healthy.
+
+Mascheramento versione: aggiunto un `ErrorReportValve` con `showServerInfo="false"` al `server.xml`,
+montato in sola lettura nel solo container di test. Mantenuto `showReport` di default (gli errori
+restano leggibili in test). Verificato: la pagina 404 mostra solo "HTTP Status 404", non piu'
+"Apache Tomcat/9.0.117".
+
+Debito MD5: confermato non affrontabile senza sorgente Java (assente sul server, logica di login
+nei jar compilati). Mitigazione effettiva: l'allowlist di rete della Fase 6 limita il login a 4 IP.
+
+Promozione futura in produzione: il `web.xml` si promuove via rsync come i JSP (sta in `WEB-INF/`);
+il `server.xml` invece e' montato solo sul test, quindi per la produzione andra' montato anche li'
+o cotto nel Dockerfile, come passo a parte. Per ora tutto resta su test.
+
+Verifica degli header (2026-06-19): completa e positiva. Lato server: SAMEORIGIN sicuro perche' gli
+iframe dell'app (FatturaPA, allegati, liberatoria, registrazione traduttori) usano `path_base` =
+`common.base=/getrad`, percorso relativo, quindi same-origin; nosniff sicuro perche' gli asset
+statici sono serviti con Content-Type corretti (text/javascript, image/jpeg, text/html, text/css).
+Riscontro a video confermato dall'utente su test: navigazione, allegati, anteprima FatturaPA e
+liberatoria si vedono correttamente, nessun riquadro vuoto ne' anomalia. Header pronti per la
+promozione in produzione insieme al resto dell'hardening.
+
 ## 2026-06-19 - Promozione dei fix JSP in produzione (allineamento prod a test)
 
 Commit: fuori repo (host VM810) + schede `.claude/`

@@ -6,7 +6,7 @@
 > superare la precedente e ne cita il numero. Le inferenze non confermate si marcano come da
 > verificare e si promuovono a decisione solo quando una fonte le conferma.
 
-## ADR-001 — Adozione del sistema di progetto portabile
+## ADR-001 - Adozione del sistema di progetto portabile
 
 Data: <YYYY-MM-DD>
 Stato: accettata
@@ -19,7 +19,7 @@ umano sul versionamento.
 Conseguenze: ogni passo significativo aggiorna schede, `last-verified-commit`, snapshot e
 work-log; commit e push restano manuali.
 
-<!-- ADR-002 — <titolo>
+<!-- ADR-002 - <titolo>
 Data: <YYYY-MM-DD>
 Stato: <proposta / accettata / superata da ADR-NNN>
 Contesto: ...

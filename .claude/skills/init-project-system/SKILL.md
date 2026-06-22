@@ -43,7 +43,7 @@ modalita valgono i Passi 0 e 0.5 (account Claude e identita git) e il vincolo di
 mai. In modalita allineamento non sovrascrivere nulla in silenzio: proporre e allineare poche
 schede alla volta, chiedendo conferma su ogni passo che tocca il version control.
 
-## Passo 0 — Verifica dell'account Claude Code attivo (multi-account)
+## Passo 0 - Verifica dell'account Claude Code attivo (multi-account)
 
 Questo passo precede ogni altra azione, perche il resto del lavoro va svolto con l'account
 giusto e perche su questa classe di macchine sono configurati piu profili isolati tramite la
@@ -83,7 +83,7 @@ Interpretazione dell'esito e azione:
    solo all'avvio del processo. Proseguire solo quando l'account attivo coincide con quello
    voluto.
 
-## Passo 0.5 — Selezione dell'identita git e del remote
+## Passo 0.5 - Selezione dell'identita git e del remote
 
 Subito dopo l'account Claude, e prima del runbook, decidere con quale identita git verranno
 firmati i commit e a quale repository GitHub agganciare il remoto. Identita git e account
@@ -143,7 +143,7 @@ sottocartelle con un proprio `README.md` di istanziazione (attualmente `template
 l'ambiente di build LaTeX). Non si attivano d'ufficio: si offrono con una domanda esplicita allo
 startup, esattamente come l'MCP (vedi Passo 4).
 
-## Passi 1-8 — Runbook di inizializzazione
+## Passi 1-8 - Runbook di inizializzazione
 
 Leggere la sezione "Comando di inizializzazione" di `.claude/PROJECT-SYSTEM.md` ed eseguirne i
 passi nell'ordine indicato, applicando anche le sezioni richiamate (anatomia di `.claude`,

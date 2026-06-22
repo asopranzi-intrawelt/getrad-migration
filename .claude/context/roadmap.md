@@ -66,7 +66,18 @@ tentativi a forza bruta; irrigidimento di sessione e cookie. La bonifica delle c
 Ulteriore debito emerso dall'audit del 2026-06-19: le password degli utenti in `an_utenti` sono
 hash MD5 a 32 cifre, algoritmo debole e probabilmente non salato, con alcune password mai cambiate
 da molti anni. Il rafforzamento dell'hashing richiede di toccare il codice di login Java e va
-pianificato insieme a una rotazione delle password piu' vecchie.
+pianificato insieme a una rotazione delle password piu' vecchie. Confermato il 2026-06-19 che il
+sorgente Java non e' presente sul server, quindi il debito MD5 e' bloccato finche' non si recupera
+il sorgente; nel frattempo l'allowlist di rete della Fase 6 e' il controllo compensativo.
+
+Fatti su test e promossi in produzione il 2026-06-19, verificati su entrambi: header di sicurezza
+(`X-Frame-Options: SAMEORIGIN`, `X-Content-Type-Options: nosniff`) tramite filtro nativo Tomcat nel
+`web.xml` dell'app, e mascheramento della versione Tomcat nelle pagine di errore
+(`ErrorReportValve showServerInfo=false`) tramite `server.xml` montato. La verifica visiva su test
+da parte dell'utente ha confermato che gli header non rompono frame, allegati, anteprima FatturaPA
+ne' liberatoria. Audit positivo su un punto: nessuna webapp di default (`manager`, `docs`,
+`examples`) deployata, quindi niente da rimuovere. Resta opzionale, su decisione: HTTPS sulla LAN e
+`showReport=false` per nascondere anche le stack trace.
 
 **4. Test pratico disaster recovery** (opzionale, nessuna scadenza)
 

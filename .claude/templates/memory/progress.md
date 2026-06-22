@@ -6,7 +6,7 @@
 > documenti `.docx`, con il nome del documento sorgente e l'esito, così la data di allineamento
 > sopravvive a un clone.
 
-## <YYYY-MM-DD> — Inizializzazione del sistema di progetto
+## <YYYY-MM-DD> - Inizializzazione del sistema di progetto
 
 Commit: <hash del commit corrente>
 File toccati: anatomia di `.claude`, `CLAUDE.md`, `.gitignore`, schede di `context/`.

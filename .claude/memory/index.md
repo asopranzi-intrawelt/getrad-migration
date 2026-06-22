@@ -35,7 +35,9 @@ amichevole `egetrad`/`egetrad-login` su porta 80 tramite reverse proxy nginx in
 `/srv/getrad-stack/proxy/` (ADR-011), con la 80 nell'allowlist. Migrazione quoting JSP
 promossa in produzione il 2026-06-19: produzione allineata a test (234 pagine compilano, zero bug
 di quoting), backup pre-promozione in `backups/getrad-jsp-prod-pre-promote-2026-06-19.tar.zst`.
-Mailer di produzione non ancora toccato.
+Mailer di produzione non ancora toccato. Hardening di base (header di sicurezza
+`X-Frame-Options`/`X-Content-Type-Options` e mascheramento versione Tomcat) applicato e verificato
+su test e poi promosso in produzione il 2026-06-19, vedi ADR-013 e `roadmap.md`.
 
 Tutto lo stato operativo vive su disco su VM810 ed e' ripristinabile: albero di test in
 `/srv/getrad-stack/test/`, script firewall in `/srv/getrad-stack/firewall/` con backup iptables
