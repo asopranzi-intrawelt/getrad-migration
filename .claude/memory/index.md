@@ -49,7 +49,8 @@ su porta 80 e 8080; accesso verificato dal vivo (`TcpTestSucceeded: True`) da en
 .80 PC-SONIA, .81 PC-FABIO, .206 PC-ELISA, .73 PC-ALESSIO (Sopranzi), .75 PC-ALESSIA-NAS, .76
 PC-ALESSANDRO. L'IP di PC-ALESSANDRO era stato annotato male (.208): l'IP reale .76 e' stato letto
 dal `SourceAddress` di `Test-NetConnection`. Mappatura hosts gia' fatta lato client; su
-PC-ALESSANDRO resta da separare nel file hosts la riga di `egetrad`.
+PC-ALESSANDRO la riga di `egetrad` nel file hosts, prima fusa con `195.96.193.36 intrawelt.com`, e'
+stata separata e ora risolve a 192.168.20.90.
 
 Prossimi passi: schedulare la camminata di verifica funzionale nel browser seguendo
 `CAMMINATA_VERIFICA.md`, che l'utente esegue in test (ogni problema runtime si corregge in test e

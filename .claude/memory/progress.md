@@ -31,10 +31,10 @@ PC-ALESSIA-NAS (.75) risultava gia' True. Lezione: l'IP da autorizzare si legge 
 
 Mappatura hosts gia' eseguita dall'utente sui PC, con i tre nomi `egetrad`, `egetrad-login` ed
 `egetrad.intrawelt.com` mappati su 192.168.20.90, coerente con il catch-all del proxy e con i link
-assoluti legacy verso `egetrad.intrawelt.com:8080`. Su PC-ALESSANDRO resta da separare nel file
-hosts la riga di `egetrad`, fusa per errore con quella di `195.96.193.36 intrawelt.com` (quindi
-`egetrad` senza suffisso punta a un IP pubblico sbagliato); non blocca l'uso perche' gli utenti
-usano `egetrad-login`.
+assoluti legacy verso `egetrad.intrawelt.com:8080`. Su PC-ALESSANDRO la riga di `egetrad` nel file
+hosts era fusa per errore con quella di `195.96.193.36 intrawelt.com` (quindi `egetrad` senza
+suffisso puntava a un IP pubblico sbagliato): separata il 2026-06-22 con backup del file, ora
+`egetrad` risolve a 192.168.20.90 e ping e risoluzione lo confermano.
 
 Lavoro di rete soltanto: nessun JSP promosso, produzione applicativa intatta. La pulizia DB e la
 protezione degli accessi indesiderati (incluso il restringimento per password dei soli account
