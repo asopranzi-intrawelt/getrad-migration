@@ -2,6 +2,44 @@
 
 > Append-only, in ordine cronologico inverso (la voce più recente in alto).
 
+## 2026-06-22 - Estensione allowlist di produzione a due nuove postazioni LAN (e correzione IP)
+
+Commit: fuori repo (script firewall su VM810) + schede `.claude/`
+File toccati: `/srv/getrad-stack/firewall/getrad-firewall.sh` (backup
+`getrad-firewall.sh.bak-2026-06-22`), schede `.claude/context/deployment.md`, `.claude/memory/`
+Motivo: rendere la produzione accessibile in LAN anche a due postazioni nuove, PC-ALESSIA-NAS
+(192.168.10.75, Alessia Nasini) e PC-ALESSANDRO (Alessandro Potalivo).
+
+Esecuzione: backup datato dello script firewall, poi aggiunta dei due IP a `PROD_IPS` con commento
+del nome postazione e aggiornamento del commento di intestazione. `TEST_IPS` invariato (sola
+192.168.10.73). Lo script idempotente e' stato rieseguito: la catena `DOCKER-USER` elenca le RETURN
+per i nuovi IP su porta 80 e 8080, i DROP finali restano in coda, il test 8090 resta riservato
+all'amministrazione. La persistenza e' garantita perche' `getrad-firewall.service` (enabled, active)
+ha `ExecStart` su quello stesso script e lo riapplica dopo Docker al boot. Stato finale
+dell'allowlist di produzione, sei postazioni: .80 PC-SONIA, .81 PC-FABIO, .206 PC-ELISA, .73
+PC-ALESSIO (Sopranzi), .75 PC-ALESSIA-NAS, .76 PC-ALESSANDRO.
+
+Diagnosi di un mancato accesso, lezione operativa. Per PC-ALESSANDRO l'IP annotato era sbagliato
+(prima 192.168.10.208, poi indicato come 192.168.0.208), e con quell'IP in allowlist l'accesso
+falliva con "Impossibile raggiungere il sito". La causa non era il file hosts ne' il proxy del
+browser: il nome `egetrad-login` risolveva bene e il ping passava, ma nessun pacchetto TCP arrivava
+al server con quell'IP. Con regole di LOG temporanee davanti ai DROP e con il campo `SourceAddress`
+di `Test-NetConnection` si e' visto che quel PC esce in rete come 192.168.10.76, non .208. Corretto
+l'allowlist (rimosso il .208 mai usato, autorizzato il .76), `TcpTestSucceeded` e' passato a True.
+PC-ALESSIA-NAS (.75) risultava gia' True. Lezione: l'IP da autorizzare si legge empiricamente dal
+`SourceAddress` della macchina, non dai valori annotati, che qui erano imprecisi.
+
+Mappatura hosts gia' eseguita dall'utente sui PC, con i tre nomi `egetrad`, `egetrad-login` ed
+`egetrad.intrawelt.com` mappati su 192.168.20.90, coerente con il catch-all del proxy e con i link
+assoluti legacy verso `egetrad.intrawelt.com:8080`. Su PC-ALESSANDRO resta da separare nel file
+hosts la riga di `egetrad`, fusa per errore con quella di `195.96.193.36 intrawelt.com` (quindi
+`egetrad` senza suffisso punta a un IP pubblico sbagliato); non blocca l'uso perche' gli utenti
+usano `egetrad-login`.
+
+Lavoro di rete soltanto: nessun JSP promosso, produzione applicativa intatta. La pulizia DB e la
+protezione degli accessi indesiderati (incluso il restringimento per password dei soli account
+ammessi) sono rimandate a una fase successiva, su indicazione dell'utente.
+
 ## 2026-06-19 - Promozione hardening in produzione (header di sicurezza e mascheramento versione)
 
 Commit: fuori repo (produzione su VM810) + schede `.claude/`

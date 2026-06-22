@@ -8,8 +8,8 @@
 
 ```
 Branch attivo:          main
-Commit di riferimento:  11b13e8
-Data snapshot:          2026-06-19
+Commit di riferimento:  bc84938
+Data snapshot:          2026-06-22
 ```
 
 ## Stato di verifica delle schede
@@ -43,9 +43,18 @@ Tutto lo stato operativo vive su disco su VM810 ed e' ripristinabile: albero di 
 `/srv/getrad-stack/test/`, script firewall in `/srv/getrad-stack/firewall/` con backup iptables
 pre-modifica, export utenti loggabili (con hash MD5) in `_notes/` non versionato.
 
+Il 2026-06-22 l'allowlist di produzione e' stata estesa a sei postazioni LAN, aggiungendo
+PC-ALESSIA-NAS (192.168.10.75, Alessia Nasini) e PC-ALESSANDRO (192.168.10.76, Alessandro Potalivo)
+su porta 80 e 8080; accesso verificato dal vivo (`TcpTestSucceeded: True`) da entrambe. Set completo:
+.80 PC-SONIA, .81 PC-FABIO, .206 PC-ELISA, .73 PC-ALESSIO (Sopranzi), .75 PC-ALESSIA-NAS, .76
+PC-ALESSANDRO. L'IP di PC-ALESSANDRO era stato annotato male (.208): l'IP reale .76 e' stato letto
+dal `SourceAddress` di `Test-NetConnection`. Mappatura hosts gia' fatta lato client; su
+PC-ALESSANDRO resta da separare nel file hosts la riga di `egetrad`.
+
 Prossimi passi: schedulare la camminata di verifica funzionale nel browser seguendo
 `CAMMINATA_VERIFICA.md`, che l'utente esegue in test (ogni problema runtime si corregge in test e
 si ripromuove con `test/promote-to-prod.sh`); proseguire la roadmap di sicurezza (Fase 7 hardening
-legacy, incluso il debito sull'hashing MD5 delle password); completare la mappatura hosts sui PC di
-Sonia ed Elisa. Quattro pagine restano non risolte per problemi non di quoting (vedi
-`current-work.md`), in attesa di conferma sul loro utilizzo.
+legacy, incluso il debito sull'hashing MD5 delle password); affrontare quando indicato la pulizia
+del DB e il restringimento degli accessi ai soli account ammessi per password. Quattro pagine
+restano non risolte per problemi non di quoting (vedi `current-work.md`), in attesa di conferma sul
+loro utilizzo.

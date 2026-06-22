@@ -126,8 +126,10 @@ produzione e test sulla porta di destinazione originale prima del DNAT, tramite 
 dato che entrambi i container ascoltano internamente sulla 8080.
 
 La produzione, sia sulla porta 80 (reverse proxy con nome amichevole) sia sulla 8080 (accesso
-diretto a Tomcat), è consentita a quattro postazioni: 192.168.10.80, 192.168.10.81, 192.168.10.206
-e 192.168.10.73. Il test sulla porta 8090 è consentito alla sola 192.168.10.73. Ogni altra sorgente
+diretto a Tomcat), è consentita a sei postazioni: 192.168.10.80 (PC-SONIA), 192.168.10.81
+(PC-FABIO), 192.168.10.206 (PC-ELISA), 192.168.10.73 (PC-ALESSIO, Sopranzi), e dal 2026-06-22 anche
+192.168.10.75 (PC-ALESSIA-NAS, Alessia Nasini) e 192.168.10.76 (PC-ALESSANDRO, Alessandro
+Potalivo). Il test sulla porta 8090 è consentito alla sola 192.168.10.73. Ogni altra sorgente
 verso 80, 8080 e 8090 viene scartata. La porta SSH dell'host non è interessata, perché non è una
 porta pubblicata da container e non transita per `DOCKER-USER`.
 
