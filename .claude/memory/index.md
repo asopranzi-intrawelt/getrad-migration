@@ -64,6 +64,13 @@ auth off, credenziali svuotate): eliminato il timeout SMTP che rallentava il log
 rimossa la password Office365 viva dalla config attiva (backup pre-modifica da bonificare).
 Reimpostata anche la password di `smartellini`. Password mai versionate.
 
+Il 2026-06-23 cifrati i backup a chiave pubblica GPG: chiave dedicata RSA4096, solo la pubblica sul
+server (keyring `/etc/getrad-backup-gpg`, fingerprint 34688023949F4C34E51F45752C064A4CB038334D), la
+privata custodita fuori dal server e cancellata da qui. `getrad-backup.sh` ora produce `*.zst.gpg`,
+giro cifra/ripristina verificato, i 21 backup storici in chiaro sono stati cifrati a posteriori e i
+vecchi getrad.properties con segreti eliminati. Restore aggiornato nel README (serve `gpg --decrypt`
+e la chiave privata). Restano in chiaro solo gli artefatti di rollback temporanei da far scadere.
+
 Prossimi passi: schedulare la camminata di verifica funzionale nel browser seguendo
 `CAMMINATA_VERIFICA.md`, che l'utente esegue in test (ogni problema runtime si corregge in test e
 si ripromuove con `test/promote-to-prod.sh`); proseguire la roadmap di sicurezza (Fase 7 hardening

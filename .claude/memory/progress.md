@@ -2,6 +2,39 @@
 
 > Append-only, in ordine cronologico inverso (la voce più recente in alto).
 
+## 2026-06-23 - Cifratura dei backup a chiave pubblica GPG
+
+Commit: fuori repo (host VM810) + schede `.claude/`
+File toccati: `/usr/local/sbin/getrad-backup.sh` (backup `*.bak-pre-gpg-2026-06-23`), keyring
+`/etc/getrad-backup-gpg/`, `/srv/getrad-stack/backups/` (cifratura degli archivi), `README.md`,
+schede `.claude/`
+Motivo: i backup contenevano in chiaro dati sensibili (anagrafiche, fatture, dati economici) e i
+segreti applicativi. Punto della Fase 7. Scelta dell'utente: cifratura asimmetrica a chiave pubblica.
+
+Modello adottato: chiave GPG dedicata RSA4096 generata in un keyring isolato e solo-root
+`/etc/getrad-backup-gpg` (fingerprint 34688023949F4C34E51F45752C064A4CB038334D). Sul server resta
+soltanto la chiave pubblica, quindi il cron cifra ma non puo' decifrare; la chiave privata e' stata
+esportata, consegnata all'utente che l'ha messa al sicuro fuori dal server, e poi cancellata dal
+server (shred). Verificato sul server che cifra ancora e non decifra piu'. La privata e' senza
+passphrase: la sua sicurezza sta nella custodia del file, ed e' l'unico modo per il restore, la sua
+perdita rende i backup irrecuperabili.
+
+Script `getrad-backup.sh` modificato: ogni artefatto passa ora per `zstd` e poi `gpg --encrypt` verso
+il recipient, output `*.zst.gpg`; `SHA256SUMS` calcolati sui file cifrati; retention aggiornata per
+intercettare anche i `.gpg`. Provato un backup completo e verificato il giro completo finche' la
+privata era ancora presente: il DB cifrato si decifra in un dump valido (81 tabelle, trailer Dump
+completed), la conf si decifra ed estrae, gli SHA256 combaciano.
+
+Bonificati anche i backup storici: 21 archivi `getrad-*.zst` gia' presenti in chiaro sono stati
+cifrati sul posto verso la chiave pubblica e rimossi in chiaro previa verifica del pacchetto GPG;
+tutti i `SHA256SUMS` rigenerati sui file cifrati e verificati. Restano in chiaro di proposito solo
+l'artefatto di rollback `an_utenti-prod-pre-lockdown-2026-06-22.sql` (da far scadere) e i piccoli
+`.bak` di compose e web.xml privi di segreti.
+
+Documentazione aggiornata nel `README.md`: sezione Backup (file `.gpg`, modello a chiave pubblica,
+custodia della privata), Restore (passo `gpg --decrypt` prima di `zstd -d`, import della privata una
+tantum), Disaster recovery (import chiave e decifratura) e riferimenti (keyring di backup).
+
 ## 2026-06-23 - Bonifica copie segreti e compressione log storici
 
 Commit: fuori repo (filesystem VM810) + schede `.claude/`

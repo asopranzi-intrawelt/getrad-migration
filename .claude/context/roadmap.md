@@ -84,6 +84,12 @@ la password Office365 viva dalla configurazione attiva. Resta da bonificare la c
 backup del file che contiene ancora il vecchio segreto. La rotazione della password Office365 lato
 provider resta comunque consigliata, indipendentemente dal gestionale.
 
+Fatto il 2026-06-23: cifratura dei backup (punto Fase 7). Chiave GPG dedicata RSA4096 a chiave
+pubblica, con la sola pubblica sul server (keyring solo-root `/etc/getrad-backup-gpg`) e la privata
+custodita fuori dal server; `getrad-backup.sh` cifra ogni artefatto in `*.zst.gpg`, giro completo
+cifra/ripristina verificato, e i 21 backup storici in chiaro sono stati cifrati a posteriori. Resta
+in chiaro solo l'artefatto di rollback temporaneo. Documentazione restore aggiornata nel README.
+
 Fatti su test e promossi in produzione il 2026-06-19, verificati su entrambi: header di sicurezza
 (`X-Frame-Options: SAMEORIGIN`, `X-Content-Type-Options: nosniff`) tramite filtro nativo Tomcat nel
 `web.xml` dell'app, e mascheramento della versione Tomcat nelle pagine di errore
