@@ -2,6 +2,32 @@
 
 > Append-only, in ordine cronologico inverso (la voce più recente in alto).
 
+## 2026-06-23 - Bonifica copie segreti e compressione log storici
+
+Commit: fuori repo (filesystem VM810) + schede `.claude/`
+File toccati: `extracted/getrad/WEB-INF/conf/` e `test/extracted/getrad/WEB-INF/conf/` (rimozione
+copie), `extracted/getrad/WEB-INF/logs/` (compressione), schede `.claude/`
+Motivo: chiusura del debito di bonifica delle copie storiche con segreti e recupero spazio dai log
+ereditati dalla vecchia VM809.
+
+Eliminate 16 copie storiche di `getrad.properties` che contenevano ancora segreti in chiaro
+(password Office365, password DB, token): otto in produzione e otto in test, con suffissi datati
+`_2020*`/`_2021*`, `.save`, `.pre-docker.bak`, `.bak.2026-02-06_131057`. Selezione per contenuto,
+cioe' solo i file con la stringa `office365`, cosi' il file attivo gia' pulito non e' stato toccato.
+Conservato di proposito il solo `getrad.properties.bak-pre-mailer-off-2026-06-23`, unico file che
+ancora contiene il vecchio segreto, come rollback della disattivazione mailer; da eliminare quando
+la modifica sara' consolidata. Restano quindi i due `getrad.properties` attivi (entrambi senza
+segreto SMTP) piu' quel backup.
+
+Log storici compressi: i ruotati pre-migrazione (`Accesses.csv.1` da 98M e gli `Application.log.1..10`
+da circa 10M) sono stati gzippati, lasciando intatti i file attivi `Application.log` e `Accesses.csv`.
+La cartella log e' passata da 203M a 24M.
+
+Punto segnalato, non eseguito: i due artefatti di rollback recenti, il dump
+`backups/an_utenti-prod-pre-lockdown-2026-06-22.sql` e il backup
+`getrad.properties.bak-pre-mailer-off-2026-06-23`, vanno fatti scadere ed eliminare una volta
+verificato nel tempo che blocco accessi e mailer spento non danno problemi.
+
 ## 2026-06-23 - Disattivazione mailer applicativo in produzione e reset password di accesso
 
 Commit: fuori repo (config di produzione e DB su VM810) + schede `.claude/`
