@@ -25,6 +25,20 @@ pre-modifica `getrad.properties.bak-pre-mailer-off-2026-06-23` contiene ancora l
 Office365 e va trattato come copia storica con segreto, da eliminare in sicurezza una volta
 consolidata la modifica (rientra nel debito di bonifica delle copie storiche).
 
+Verifica di non regressione lato utente (2026-06-23, su test): esercitato end-to-end il flusso piu
+critico, il cambio password forzato che i sei utenti in whitelist incontrano al primo accesso (la
+loro password risulta scaduta). Login, poi POST a `ChangePassword`: HTTP 302 verso la home in 0,017
+secondi, password effettivamente aggiornata nel DB, nessuna eccezione mail nei log (cercati
+`SMTPHost`, `sendMail`, `MimeMessage`, `Transport`, `javax.mail`, `messaging`, `refused`). L'app
+gestisce l'invio mail in modo non bloccante, quindi il rifiuto SMTP non risale all'utente; il login
+e tornato a 0,025 secondi e il thread delle email schedulate registra "Nessuna email da inviare"
+senza errori. Account di prova ripristinato. Non esercitate singolarmente le azioni mail opzionali
+(invio preventivo via email, notifiche commerciali): rischio basso perche' sono azioni volontarie e
+che comunque non si vuole piu spedire, da provare su test se si vuole certezza totale. Nota a
+margine: nei log compaiono `DBConnectionManager - Test Connection Error: Connection reset`, di tipo
+`java.sql.SQLException`, non legati al mailer, dovuti al pool che ricicla connessioni al DB chiuse
+per inattivita; l'operazione e andata comunque a buon fine.
+
 Reset di due password di accesso applicativo, su richiesta dell'utente, a valori da lui annotati e
 non versionati. Account amministratore `getrad` reimpostato il 2026-06-22, account `smartellini`
 (Sonia Martellini) reimpostato il 2026-06-23, entrambi verificati con login reale su produzione (302
