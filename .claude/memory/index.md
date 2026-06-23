@@ -71,6 +71,12 @@ giro cifra/ripristina verificato, i 21 backup storici in chiaro sono stati cifra
 vecchi getrad.properties con segreti eliminati. Restore aggiornato nel README (serve `gpg --decrypt`
 e la chiave privata). Restano in chiaro solo gli artefatti di rollback temporanei da far scadere.
 
+Il 2026-06-23 eseguita anche una simulazione di disaster recovery isolata e non distruttiva: chiave
+privata off-site reimportata per la sola prova, DB ripristinato dai backup cifrati in un container
+nuovo, integrita' identica alla produzione (86 tabelle, conteggi righe coincidenti), poi teardown e
+shred. Validati il funzionamento della chiave custodita fuori dal server e la ripristinabilita' dei
+backup cifrati. Produzione mai interrotta.
+
 Prossimi passi: schedulare la camminata di verifica funzionale nel browser seguendo
 `CAMMINATA_VERIFICA.md`, che l'utente esegue in test (ogni problema runtime si corregge in test e
 si ripromuove con `test/promote-to-prod.sh`); proseguire la roadmap di sicurezza (Fase 7 hardening

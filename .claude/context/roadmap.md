@@ -99,10 +99,15 @@ ne' liberatoria. Audit positivo su un punto: nessuna webapp di default (`manager
 `examples`) deployata, quindi niente da rimuovere. Resta opzionale, su decisione: HTTPS sulla LAN e
 `showReport=false` per nascondere anche le stack trace.
 
-**4. Test pratico disaster recovery** (opzionale, nessuna scadenza)
+**4. Test pratico disaster recovery** (FATTO in simulazione 2026-06-23)
 
-Il restore from-scratch non è mai stato testato. Da pianificare su host vergine Ubuntu 24.04.
-La procedura è documentata in `README.md` (sezione Disaster recovery).
+Eseguita una simulazione isolata e non distruttiva del restore dai backup cifrati: chiave privata
+off-site reimportata temporaneamente, DB ripristinato in un container nuovo e vuoto, integrita'
+confrontata con la produzione con corrispondenza esatta (86 tabelle, 19 routine, conteggi righe
+identici), poi teardown e shred. Validati i punti prima non provati: la chiave custodita fuori dal
+server decifra davvero, e i backup cifrati sono pienamente ripristinabili. La procedura e' in
+`README.md` (sezione Disaster recovery). Resta non eseguito il restore su un host fisicamente vergine
+e il boot completo dell'app dai soli backup, coperto comunque in continuo dall'ambiente di test.
 
 ## Idee e ipotesi da verificare
 

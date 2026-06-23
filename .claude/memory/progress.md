@@ -2,6 +2,38 @@
 
 > Append-only, in ordine cronologico inverso (la voce più recente in alto).
 
+## 2026-06-23 - Test di disaster recovery dai backup cifrati (simulato, isolato, non distruttivo)
+
+Commit: fuori repo (prova effimera su VM810) + schede `.claude/`
+File toccati: nessuno in modo permanente; ambiente effimero `/srv/getrad-stack/dr-test/` creato e poi
+rimosso; schede `.claude/`
+Motivo: punto della roadmap. Validare che dai backup cifrati si possa ricostruire il gestionale,
+senza fermare la produzione. Vincolo dell'utente: solo se simulabile e documentabile senza
+interrompere l'applicazione.
+
+Disegno non distruttivo: tutto in un ambiente effimero isolato, senza toccare prod (8080) ne' test
+(8090). La chiave privata, che era stata tolta dal server, e' stata rimandata temporaneamente
+dall'utente via scp per la sola durata della prova e importata in un keyring temporaneo dedicato. Gia'
+questo e' un risultato di DR: la copia off-site della chiave decifra correttamente, quindi e' valida e
+utilizzabile per un restore reale.
+
+Esecuzione: decifrati e recuperati gli artefatti dall'ultimo set cifrato (stack-config con compose,
+Dockerfile, getrad.xml, db-conf; conf applicativa). Avviato un container MariaDB nuovo con datadir
+vuoto, isolato, senza porte esposte. Ripristinato il dump del DB decifrato nel container nuovo e
+confrontata l'integrita' con la produzione viva: corrispondenza esatta su tutto, 86 tabelle, 19
+routine, an_utenti 10651, an_traduttori 10536, an_fatture 17123, an_ordini 75645, utenti attivi 6.
+Il restore dai backup cifrati e' quindi pienamente funzionante.
+
+Il layer applicativo non e' stato riavviato in questa prova perche' la sua riproducibilita' e' gia'
+dimostrata in continuo dall'ambiente di test (getrad-test su 8090, app contro un DB seminato da dump);
+qui si e' validato il pezzo specifico e prima non provato, cioe' il ripristino dai backup CIFRATI con
+la chiave custodita fuori dal server.
+
+Teardown: container DR rimosso, chiave privata e keyring temporaneo cancellati con shred, cartella
+`dr-test` eliminata. Verificato stato finale: nessun container DR residuo, keyring di backup del
+server di nuovo senza chiave privata (solo-cifratura), produzione su 8080 a 200. Produzione mai
+interrotta durante l'intera prova.
+
 ## 2026-06-23 - Cifratura dei backup a chiave pubblica GPG
 
 Commit: fuori repo (host VM810) + schede `.claude/`
