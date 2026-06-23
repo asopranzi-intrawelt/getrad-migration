@@ -70,6 +70,20 @@ pianificato insieme a una rotazione delle password piu' vecchie. Confermato il 2
 sorgente Java non e' presente sul server, quindi il debito MD5 e' bloccato finche' non si recupera
 il sorgente; nel frattempo l'allowlist di rete della Fase 6 e' il controllo compensativo.
 
+Fatto il 2026-06-22: blocco accessi applicativi. Il login al gestionale e' stato ristretto a sei
+account interni disattivando `fl_attivo` su tutti gli altri 10.140 account loggabili, senza
+cancellare anagrafiche; enforcement di `fl_attivo` verificato su test e in produzione, operazione
+reversibile con backup dedicato `backups/an_utenti-prod-pre-lockdown-2026-06-22.sql`. Reimpostata la
+password dell'admin applicativo `getrad`. Questo riduce la superficie di login a sei account dietro
+l'allowlist di rete, pur restando aperto il debito sull'algoritmo MD5. Dettagli nel work-log.
+
+Fatto il 2026-06-23: disattivazione definitiva del mailer applicativo in produzione (punto ADR-009).
+`mail.host` e l'appender log4j `MAIL.SMTPHost` puntati a 127.0.0.1, autenticazione a 0 e credenziali
+svuotate; questo elimina il timeout SMTP che rallentava il login di una ventina di secondi e rimuove
+la password Office365 viva dalla configurazione attiva. Resta da bonificare la copia storica di
+backup del file che contiene ancora il vecchio segreto. La rotazione della password Office365 lato
+provider resta comunque consigliata, indipendentemente dal gestionale.
+
 Fatti su test e promossi in produzione il 2026-06-19, verificati su entrambi: header di sicurezza
 (`X-Frame-Options: SAMEORIGIN`, `X-Content-Type-Options: nosniff`) tramite filtro nativo Tomcat nel
 `web.xml` dell'app, e mascheramento della versione Tomcat nelle pagine di errore

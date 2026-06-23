@@ -2,6 +2,81 @@
 
 > Append-only, in ordine cronologico inverso (la voce più recente in alto).
 
+## 2026-06-23 - Disattivazione mailer applicativo in produzione e reset password di accesso
+
+Commit: fuori repo (config di produzione e DB su VM810) + schede `.claude/`
+File toccati: `extracted/getrad/WEB-INF/conf/getrad.properties` (backup
+`getrad.properties.bak-pre-mailer-off-2026-06-23`), tabella `an_utenti`, schede `.claude/`
+Motivo: il gestionale non deve piu inviare mail e il tentativo di connessione SMTP verso Office365,
+non raggiungibile dal container, causava un timeout di una ventina di secondi al login. Inoltre
+servivano due reset di password di accesso.
+
+Mailer disattivato in produzione replicando il metodo gia adottato su test (vedi ADR-009): nel
+`getrad.properties` il mailer applicativo `mail.host` e l'appender log4j degli errori
+`log4j.appender.MAIL.SMTPHost` sono stati puntati a 127.0.0.1, dove nessun SMTP e in ascolto nel
+container quindi la connessione viene rifiutata subito invece di andare in timeout;
+`mail.autentication` portato a 0 e svuotate le credenziali `mail.user`, `mail.password`,
+`SMTPUsername`, `SMTPPassword`. Effetto collaterale positivo di sicurezza: la password Office365
+viva e stata rimossa dalla configurazione attiva, e la stringa `smtp.office365.com` non compare piu
+nel file. Modifica byte-safe sul file Latin-1. Restart del container app per ricaricare la config:
+Login.jsp di nuovo a 200 dopo pochi secondi, e il login di un account in whitelist e passato da una
+ventina di secondi a 0,025 secondi, sempre 302 verso l'area autenticata. Caveat: il backup
+pre-modifica `getrad.properties.bak-pre-mailer-off-2026-06-23` contiene ancora la vecchia password
+Office365 e va trattato come copia storica con segreto, da eliminare in sicurezza una volta
+consolidata la modifica (rientra nel debito di bonifica delle copie storiche).
+
+Reset di due password di accesso applicativo, su richiesta dell'utente, a valori da lui annotati e
+non versionati. Account amministratore `getrad` reimpostato il 2026-06-22, account `smartellini`
+(Sonia Martellini) reimpostato il 2026-06-23, entrambi verificati con login reale su produzione (302
+verso area autenticata). Le password precedenti, MD5, non erano recuperabili in chiaro; i vecchi
+hash sono stati conservati nella sessione operativa per rollback. Resta valida la distinzione tra
+queste password applicative e `getradpwd`, che e la password dell'utente MariaDB nel
+`getrad.properties` per la connessione al database.
+
+## 2026-06-22 - Blocco accessi al gestionale: login ristretto a sei account interni
+
+Commit: fuori repo (DB di produzione su VM810) + schede `.claude/`
+File toccati: tabella `an_utenti` del DB di produzione, `backups/an_utenti-prod-pre-lockdown-2026-06-22.sql`
+(+ `.sha256`), schede `.claude/`
+Motivo: il gestionale e' di fatto in sola consultazione interna e l'accesso di rete e' gia' ristretto
+ai sei PC della LAN dal firewall. Richiesta dell'utente: che possano autenticarsi solo i dipendenti
+Intrawelt che usano davvero il gestionale, disattivando il login a tutti gli altri, senza pero'
+cancellare alcuna anagrafica.
+
+Identificazione oggettiva degli account, non per cognome. La tabella `an_utenti_tipi` distingue i
+tipi interni (che puntano ad `an_personale`) da Traduttore, Clienti e Contatti (esterni), ma diversi
+account di staff sono storicamente di tipo 2 Traduttore pur avendo permessi. Il discriminante pulito
+si e' rivelato `abilitazioni>0`: tra gli account loggabili, 8.199 hanno permessi zero (traduttori
+self-service) e solo 16 hanno permessi operativi. Risolti nome ed email reali via join con
+`an_personale`/`an_traduttori`: i 16 sono tutti dipendenti con email `@intrawelt.com`. Da qui la
+scelta della whitelist con l'utente.
+
+Whitelist finale, sei account che restano `fl_attivo='S'`: `smartellini` (Sonia Martellini),
+`fguidali` (Fabio Guidali), `emonterubb` (Elisa Monterubbianesi, il suo account vero; quello
+`elisa.monterubbianesi` era morto), `anasini` (Alessia Nasini), `apotalivo` (Alessandro Potalivo),
+`getrad` (amministratore di sistema, mantenuto). Disattivati tutti gli altri, inclusi i colleghi con
+permessi non piu' operativi (Perri, Ponder, Tillotson, Angelini, Ripa, Martinelli, Stratmann), le
+caselle di sede Roma (`npugarte`) e Milano (`rvergani`), e il doppione `Alessandro` di Potalivo.
+
+Esecuzione e garanzie. Backup della tabella `an_utenti` di produzione prima della modifica, con
+SHA256, come artefatto di rollback specifico (il flag `fl_attivo` si reimporta da li'). Verificato su
+test (porta 8090) che il login rispetti davvero `fl_attivo`: stesso account e password, con `S`
+l'autenticazione passa (302 verso area autenticata), con `N` viene respinta (302 verso `Login.jsp`),
+quindi la disattivazione blocca davvero l'accesso e non e' solo cosmetica; account di prova
+ripristinato. Solo allora l'UPDATE in produzione: `fl_attivo='N'` per tutti i `fl_attivo='S'` non in
+whitelist, 10.140 righe modificate, attivi passati da 10.146 a 6, nessuna riga cancellata. Conferma
+end-to-end su 8080: `apotalivo` entra, un account ora disattivato (`rvergani`) viene respinto al
+login. Reversibile: per riabilitare un account basta riportarlo a `fl_attivo='S'`, le anagrafiche e
+i riferimenti di ordini, fatture e traduzioni sono intatti.
+
+Reset password admin. Reimpostata la password dell'account applicativo `getrad` a un valore noto
+all'utente (la precedente, MD5, non era recuperabile in chiaro; da non confondere con `getradpwd`
+che e' la password dell'utente MariaDB nel `getrad.properties`). Vecchio hash conservato per
+rollback nella sessione operativa, password nuova comunicata all'utente e non versionata.
+
+Debito aperto invariato: l'hashing MD5 non salato resta debole e non correggibile senza il sorgente
+Java; ora pero' la superficie di login e' ridotta a sei account dietro l'allowlist di rete.
+
 ## 2026-06-22 - Estensione allowlist di produzione a due nuove postazioni LAN (e correzione IP)
 
 Commit: fuori repo (script firewall su VM810) + schede `.claude/`

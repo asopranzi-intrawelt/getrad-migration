@@ -52,10 +52,21 @@ dal `SourceAddress` di `Test-NetConnection`. Mappatura hosts gia' fatta lato cli
 PC-ALESSANDRO la riga di `egetrad` nel file hosts, prima fusa con `195.96.193.36 intrawelt.com`, e'
 stata separata e ora risolve a 192.168.20.90.
 
+Sempre il 2026-06-22 e' stato fatto il blocco accessi al gestionale: il login e' ora ristretto a sei
+account interni (`smartellini`, `fguidali`, `emonterubb`, `anasini`, `apotalivo`, `getrad`),
+disattivando `fl_attivo` su tutti gli altri 10.140 account loggabili senza cancellare alcuna
+anagrafica. Reversibile, backup `backups/an_utenti-prod-pre-lockdown-2026-06-22.sql`, enforcement di
+`fl_attivo` verificato su test e in produzione. Password dell'admin `getrad` reimpostata a un valore
+noto all'utente, non versionata. Dettagli e razionale nel work-log.
+
+Il 2026-06-23 disattivato il mailer applicativo in produzione (mail.host e log4j MAIL su 127.0.0.1,
+auth off, credenziali svuotate): eliminato il timeout SMTP che rallentava il login di ~20s, e
+rimossa la password Office365 viva dalla config attiva (backup pre-modifica da bonificare).
+Reimpostata anche la password di `smartellini`. Password mai versionate.
+
 Prossimi passi: schedulare la camminata di verifica funzionale nel browser seguendo
 `CAMMINATA_VERIFICA.md`, che l'utente esegue in test (ogni problema runtime si corregge in test e
 si ripromuove con `test/promote-to-prod.sh`); proseguire la roadmap di sicurezza (Fase 7 hardening
-legacy, incluso il debito sull'hashing MD5 delle password); affrontare quando indicato la pulizia
-del DB e il restringimento degli accessi ai soli account ammessi per password. Quattro pagine
+legacy, incluso il debito sull'hashing MD5 delle password). Quattro pagine
 restano non risolte per problemi non di quoting (vedi `current-work.md`), in attesa di conferma sul
 loro utilizzo.
