@@ -254,3 +254,21 @@ prossima sincronizzazione dell'albero (sta in `WEB-INF/`, va incluso nella rsync
 non solo `jsp/`). Il `server.xml` invece non si promuove via rsync: in produzione va montato lo
 stesso file o cotta la modifica nel Dockerfile, come passo dedicato. Per il debito MD5, non
 risolvibile senza sorgente, il controllo compensativo resta l'allowlist di rete della Fase 6.
+
+## ADR-014 - HTTPS sulla LAN non adottato
+
+Data: 2026-06-24
+Stato: accettata
+Contesto: la Fase 7 prevedeva di valutare HTTPS sulla LAN per proteggere le credenziali in transito,
+dato che il login usa hash MD5 e il dato e' sensibile. L'impianto proposto era TLS terminato sul
+reverse proxy nginx con certificato self-signed importato sui sei PC.
+Decisione: non si adotta HTTPS sulla LAN, per ora.
+Motivazione: l'esposizione e' gia' fortemente ridotta da controlli a monte. Il firewall ammette solo
+sei IP statici della LAN verso il gestionale; il login e' ristretto a sei account interni; e' uno
+strumento interno legacy su rete commutata, senza esposizione esterna. Il rischio residuo, lo
+sniffing del traffico da parte di un attaccante gia' interno alla LAN (per esempio via ARP
+spoofing), e' basso e viene accettato. Il costo, certificato self-signed con import nello store di
+fiducia di ogni PC e riconfigurazione dei cookie, non e' giustificato a fronte di questo rischio.
+Conseguenza: il flag `secure` sui cookie, che richiede HTTPS, resta non applicabile; l'eventuale
+irrigidimento dei cookie si limiterebbe a `httponly`. La decisione e' rivedibile se cambia
+l'esposizione, per esempio se il servizio dovesse diventare raggiungibile fuori dalla LAN.

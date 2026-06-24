@@ -77,9 +77,14 @@ nuovo, integrita' identica alla produzione (86 tabelle, conteggi righe coinciden
 shred. Validati il funzionamento della chiave custodita fuori dal server e la ripristinabilita' dei
 backup cifrati. Produzione mai interrotta.
 
+Il 2026-06-24 deciso di non adottare HTTPS sulla LAN (ADR-014): esposizione gia' ridotta da allowlist
+e login a sei account, rischio di sniffing interno basso e accettato. Con questa scelta la Fase 7 e'
+di fatto conclusa per quanto affrontabile senza il sorgente Java: restano aperti solo gli interventi
+che dipendono dal sorgente (hashing MD5, anti brute-force, bloccati) e azioni dell'utente (rotazione
+Office365 lato provider, eliminazione dei due artefatti di rollback in chiaro quando stabile).
+
 Prossimi passi: schedulare la camminata di verifica funzionale nel browser seguendo
 `CAMMINATA_VERIFICA.md`, che l'utente esegue in test (ogni problema runtime si corregge in test e
-si ripromuove con `test/promote-to-prod.sh`); proseguire la roadmap di sicurezza (Fase 7 hardening
-legacy, incluso il debito sull'hashing MD5 delle password). Quattro pagine
-restano non risolte per problemi non di quoting (vedi `current-work.md`), in attesa di conferma sul
-loro utilizzo.
+si ripromuove con `test/promote-to-prod.sh`). Quattro pagine restano non risolte per problemi non di
+quoting (vedi `current-work.md`), in attesa di conferma sul loro utilizzo. Per il resto il sistema e'
+in stato stabile e indurito nei limiti del possibile senza sorgente.

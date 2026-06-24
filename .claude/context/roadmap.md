@@ -90,6 +90,16 @@ custodita fuori dal server; `getrad-backup.sh` cifra ogni artefatto in `*.zst.gp
 cifra/ripristina verificato, e i 21 backup storici in chiaro sono stati cifrati a posteriori. Resta
 in chiaro solo l'artefatto di rollback temporaneo. Documentazione restore aggiornata nel README.
 
+Deciso il 2026-06-24: HTTPS sulla LAN non si adotta (ADR-014). L'esposizione e' gia' ridotta da
+allowlist di rete a sei IP e login ristretto a sei account; il rischio di sniffing interno e' basso e
+accettato, il costo del certificato e dell'import sui PC non e' giustificato. Di conseguenza il flag
+`secure` sui cookie non e' applicabile e l'irrigidimento sessione/cookie si fermerebbe a `httponly`,
+di valore marginale. La protezione del login da brute-force richiederebbe di toccare il codice di
+login compilato, quindi e' bloccata come il debito MD5 finche' non si recupera il sorgente. In
+sostanza, di quanto era affrontabile senza sorgente e senza HTTPS, la Fase 7 e' conclusa; restano
+aperti solo gli interventi che dipendono dal sorgente Java (hashing MD5, anti brute-force) e la
+rotazione lato provider della password Office365.
+
 Fatti su test e promossi in produzione il 2026-06-19, verificati su entrambi: header di sicurezza
 (`X-Frame-Options: SAMEORIGIN`, `X-Content-Type-Options: nosniff`) tramite filtro nativo Tomcat nel
 `web.xml` dell'app, e mascheramento della versione Tomcat nelle pagine di errore
